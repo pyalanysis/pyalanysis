@@ -1,8 +1,12 @@
 [tool.poetry]
-name = "alan"
+name = "pyalanysis"
 version = "0.1.0"
-description = "A package to analyse and visualize artificial light at night"
+description = "A package to analyse and visualize artificial light at night (ALAN)"
 authors = ["Anton Bossenbroek <anton.bossenbroek@gmail.com>"]
+license = "BSD-3"
+readme = "README.md"
+homepage = "https://github.com/pyalanysis/pyalanysis"
+repository = "https://github.com/pyalanysis/pyalanysis"
 
 [tool.poetry.dependencies]
 python = "^3.9"
