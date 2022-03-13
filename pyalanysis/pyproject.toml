@@ -16,7 +16,22 @@ pytest = "^5.2"
 black = "^22.1.0"
 poetry2setup = "^1.0.0"
 mypy = "^0.940"
+coverage = {extras = ["toml"], version = "^6.3.2"}
+pytest-cov = "^3.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["pyanalysis"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.report]
+fail_under = 100
