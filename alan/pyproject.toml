@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "alan"
+version = "0.1.0"
+description = "A package to analyse and visualize artificial light at night"
+authors = ["Anton Bossenbroek <anton.bossenbroek@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^22.1.0"
+poetry2setup = "^1.0.0"
+mypy = "^0.940"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
