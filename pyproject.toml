@@ -7,16 +7,30 @@ license = "BSD-3"
 readme = "README.md"
 homepage = "https://github.com/pyalanysis/pyalanysis"
 repository = "https://github.com/pyalanysis/pyalanysis"
+packages = [ {include = "pyanalysis/**/*.py"} ]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-black = "^22.1.0"
-poetry2setup = "^1.0.0"
+flake8 = "^4.0.1"
 mypy = "^0.940"
+coverage = {extras = ["toml"], version = "^6.3.2"}
+pytest-cov = "^3.0.0"
+myst-parser = "^0.17.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.paths]
+source = ["pyanalysis", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["pyanalysis"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100
