@@ -1,0 +1,30 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+      #-   id: trailing-whitespace
+      #-   repo: https://github.com/mwouts/jupytext
+      #    rev: v1.11.0  # CURRENT_TAG/COMMIT_HASH
+      #    hooks:
+      #    - id: jupytext
+      #      args: [--sync, --pipe, black]
+      #      additional_dependencies:
+      #        - black==20.8b1 # Matches hook
+-   repo: https://github.com/mwouts/jupytext
+    rev: v1.13.7  # CURRENT_TAG/COMMIT_HASH
+    hooks:
+    - id: jupytext
+      args: [--from, ipynb, --to, "py:percent"]
+
+      #-   repo: https://github.com/psf/black
+      #    rev: 20.8b1
+      #    hooks:
+      #    - id: black
+      #      language_version: python3
+
+- repo: https://github.com/kynan/nbstripout
+  rev: 0.5.0
+  hooks:
+  - id: nbstripout
