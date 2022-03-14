@@ -1,4 +1,4 @@
-from pyanalysis import __version__
+from pyalanysis import __version__
 
 
 def test_version():
