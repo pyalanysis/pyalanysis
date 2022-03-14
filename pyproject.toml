@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyalanysis"
-version = "0.1.001"
+version = "0.1.0"
 description = "A package to analyse and visualize artificial light at night (ALAN)"
 authors = ["Anton Bossenbroek <anton.bossenbroek@gmail.com>"]
 license = "BSD-3"
