@@ -1,16 +1,17 @@
 [tool.poetry]
 name = "pyalanysis"
-version = "0.1.001"
+version = "0.1.3-alpha.0"
 description = "A package to analyse and visualize artificial light at night (ALAN)"
 authors = ["Anton Bossenbroek <anton.bossenbroek@gmail.com>"]
 license = "BSD-3"
 readme = "README.md"
 homepage = "https://github.com/pyalanysis/pyalanysis"
 repository = "https://github.com/pyalanysis/pyalanysis"
-packages = [ {include = "pyanalysis/**/*.py"} ]
+packages = [ {include = "src/**/*.py"} ]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+MechanicalSoup = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

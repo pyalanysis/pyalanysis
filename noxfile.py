@@ -1,6 +1,6 @@
+"""Nox sessions."""
 # Completely copied from [1]
 # [1]: https://raw.githubusercontent.com/cjolowicz/hypermodern-python/master/noxfile.py
-"""Nox sessions."""
 import tempfile
 from typing import Any
 
