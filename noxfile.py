@@ -10,9 +10,10 @@ locations = "src", "tests", "noxfile.py", "docs/conf.py"
 @session(python=["3.9", "3.8"])
 def tests(session: Session) -> None:
     """Run pytest."""
-    args = session.posargs
+    args = session.posargs or ["--cov=src", "tests"]
     # session.install("pytest", ".")
-    session.install("coverage[toml]", "pytest", "pytest-cov", "pytest-mock", ".")
+    session.install("coverage[toml]", "pytest", "pytest-cov", "pytest-mock",
+                    ".")
     session.run("pytest", *args)
 
 
