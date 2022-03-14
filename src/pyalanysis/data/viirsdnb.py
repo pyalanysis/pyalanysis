@@ -58,7 +58,7 @@ def get_viirs_dnb_monthly_fn(
         + f"monthly/v10/{year}/{year}{month:02}/{format_type(stray_light_treatment)}"
     )
 
-    browser: ms.stateful_browser.StatefulBrowser = ms.Browser(raise_on_404=True)
+    browser: ms.stateful_browser.StatefulBrowser = ms.StatefulBrowser(raise_on_404=True)
 
     try:
         browser.open(url)
@@ -85,7 +85,7 @@ def get_viirs_dnb_monthly_fn(
     fn_to_get: str = "_".join(
         [
             "SVDNB",
-            fn_tokens[MINES_FN_VERSION_TOKEN_LOC],
+            fn_tokens[MINES_FN_SAT_TOKEN_LOC],
             fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC],
             region,
             fn_tokens[MINES_FN_CONFIG_TOKEN_LOC],
@@ -93,7 +93,7 @@ def get_viirs_dnb_monthly_fn(
             fn_tokens[MINES_FN_CREATION_DATE_TOKEN_LOC],
         ]
     )
-    return url + fn_to_get
+    return url + "/" + fn_to_get
 
 
 def get_viirs_dnb_monthly(
