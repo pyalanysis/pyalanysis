@@ -7,7 +7,10 @@ license = "BSD-3"
 readme = "README.md"
 homepage = "https://github.com/pyalanysis/pyalanysis"
 repository = "https://github.com/pyalanysis/pyalanysis"
-packages = [ {include = "src/**/*.py"} ]
+packages = [
+    {include = "src/pyalanysis/**/*.py"},
+    {include = "src/pyalanysis/py.typed"},
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -26,9 +29,10 @@ flake8-black = "^0.3.2"
 flake8-bugbear = "^22.1.11"
 flake8-import-order = "^0.18.1"
 safety = "^1.10.3"
+pytest-mock = "^3.7.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.1.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.paths]
@@ -40,4 +44,4 @@ source = ["src"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 100
+fail_under = 70
