@@ -1,4 +1,5 @@
-# Completely copied from https://raw.githubusercontent.com/cjolowicz/hypermodern-python/master/noxfile.py
+# Completely copied from [1]
+# [1]: https://raw.githubusercontent.com/cjolowicz/hypermodern-python/master/noxfile.py
 """Nox sessions."""
 import tempfile
 from typing import Any
@@ -9,7 +10,7 @@ from nox.sessions import Session
 
 package = "pyalanysis"
 nox.options.sessions = "lint", "safety", "mypy", "pytype", "tests"
-locations = "pyanalysis", "tests", "noxfile.py", "docs/conf.py"
+locations = "src", "tests", "noxfile.py", "docs/conf.py"
 
 
 def install_with_constraints(session: Session, *args: str, **kwargs: Any) -> None:
