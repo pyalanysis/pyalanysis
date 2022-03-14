@@ -15,7 +15,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: pip install nox==2022.1.7
       - run: pip install poetry==1.1.13
-      - run: poetry install && poetry run pytest 
+      - run: poetry install && poetry run pytest
         #- run: nox --sessions tests-3.9 coverage
         env:
           CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
