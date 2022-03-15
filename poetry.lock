@@ -511,7 +511,7 @@ test = ["fixtures", "mock", "purl", "pytest", "sphinx", "testrepository (>=0.0.1
 name = "responses"
 version = "0.19.0"
 description = "A utility library for mocking out the `requests` Python library."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -597,7 +597,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "6db504aabb5f07a6092a78944d80f0e562feb5a0bc18da466b887fa8020f3dda"
+content-hash = "dac9b7edf6e298a4b82b1bcbda8a03cd3c2beec92d867e97ec66594b289c7e1e"
 
 [metadata.files]
 atomicwrites = [
