@@ -1,5 +1,5 @@
 from .viirsdnb import (
-    get_viirs_dnb_monthly,
+    get_viirs_dnb_monthly_file,
     get_viirs_dnb_monthly_fn,
     ViirsDnbMonthly,
     ViirsDnbMonthlyType,
@@ -8,6 +8,6 @@ from .viirsdnb import (
 __all__ = [
     "ViirsDnbMonthlyType",
     "ViirsDnbMonthly",
-    "get_viirs_dnb_monthly",
+    "get_viirs_dnb_monthly_file",
     "get_viirs_dnb_monthly_fn",
 ]
