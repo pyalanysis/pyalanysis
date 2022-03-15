@@ -9,11 +9,14 @@ jobs:
       with:
         python-version: '3.9'
         architecture: x64
-    - uses: codecov/codecov-action@v2
-      with:
-        fail_ci_if_error: true
-        CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
+        #    - uses: codecov/codecov-action@v2
+        #      with:
+        #        fail_ci_if_error: true
+        #        CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
     - run: pip install nox==2022.1.7
     - run: pip install poetry==1.1.13
-      #- run: nox --sessions tests-3.9 coverage
-    - run: poetry install && poetry run pytest --cov=src --cov-report=xml
+    - run: nox --sessions tests-3.9 coverage
+      env:
+        CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
+
+      # - run: poetry install && poetry run pytest --cov=src --cov-report=xml
