@@ -1,42 +1,48 @@
-import inspect
-import logging
 import os
-import sys
+import shutil
+import tempfile
+from typing import cast
+import unittest
 from unittest import mock
+from unittest.mock import Mock
 
-from pyalanysis.utils import ensure_cache_dir  # type: ignore
-import pytest
-
-
-log = logging.getLogger(__name__)
-
-class MockPathCall:
-    def __init__(self, called:bool=False):
-        self._called = called
-
-    def call(self, *args) -> str:
-        log.info("Called " + inspect.stack()[0][3])
-        self._called = not self._called
-
-        return "/tmp"
-
-    @property
-    def called(self) -> bool:
-        return self._called
+from pyalanysis.utils import ensure_cache_dir, get_cache_dir  # type: ignore
 
 
-@mock.patch.dict(
-    os.environ,
-    {"PYALANYSIS_MINES_USERNAME": ""},
-)
-@mock.patch('os.makedirs', mock.Mock(return_value=0))
-def test_get_cache_dir(mocker):
-    called_os_path_expander = MockPathCall()
-    mocker.patch("os.path.expanduser", side_effect=called_os_path_expander.call)
+class TestUtils(unittest.TestCase):
+    tempdir = (tempfile.tempdir or "/tmp") + "/test_pyalanysis"
 
-    ensure_cache_dir()
+    @mock.patch.dict(
+        os.environ,
+        {"PYALANYSIS_MINES_USERNAME": ""},
+    )
+    @mock.patch("os.path.expanduser", mock.Mock(return_value=tempdir))
+    @mock.patch("os.makedirs", mock.Mock(return_value=0))
+    def test_get_cache_dir(self) -> None:
+        if os.name == "posix":
+            get_cache_dir()
 
-    if os.name == "posix":
-        assert called_os_path_expander.called
-        assert not os.makedirs.called
+            mock_expanduser = cast(Mock, os.path.expanduser)
+            makedirs = cast(Mock, os.makedirs)
 
+            assert mock_expanduser.called
+            assert not makedirs.called
+
+    @mock.patch.dict(
+        os.environ,
+        {"PYALANYSIS_MINES_USERNAME": ""},
+    )
+    @mock.patch("os.path.expanduser", mock.Mock(return_value=tempdir))
+    def test_ensure_cache_dir(self) -> None:
+        if os.name == "posix":
+            ensure_cache_dir()
+
+            mock_expanduser = cast(Mock, os.path.expanduser)
+
+            assert mock_expanduser
+            assert os.path.exists(self.tempdir)
+
+    def tearDown(self) -> None:
+        if os.name == "posix":
+            if os.path.exists(self.tempdir):
+                shutil.rmtree(self.tempdir)
