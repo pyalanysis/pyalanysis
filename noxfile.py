@@ -1,15 +1,12 @@
 """Nox sessions."""
+from pathlib import Path
 import shutil
 import sys
-from pathlib import Path
 from textwrap import dedent
 from typing import Optional
 
 import nox
-
-from nox_poetry import Session
-from nox_poetry import session
-
+from nox_poetry import Session, session
 
 package = "pyalanysis"
 python_versions = ["3.10", "3.9", "3.8", "3.7"]
@@ -51,7 +48,7 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
         text = hook.read_text()
         bindir = repr(session.bin)[1:-1]  # strip quotes
         if not (
-                Path("A") == Path("a") and bindir.lower() in text.lower() or bindir in text
+            Path("A") == Path("a") and bindir.lower() in text.lower() or bindir in text
         ):
             continue
 
@@ -142,7 +139,7 @@ def tests(session: Session, poetry: Optional[str]) -> None:
         )
 
     try:
-        session.run("coverage", "run", "--parallel", "-m", "pytest",  *session.posargs)
+        session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
     finally:
         if session.interactive:
             session.notify("coverage", posargs=[])
