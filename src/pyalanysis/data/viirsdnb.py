@@ -62,7 +62,7 @@ def get_viirs_dnb_monthly_fn(
 
     try:
         browser.open(url)
-        links: bs4.ResultSet = browser.page.findAll("a")
+        links: bs4.element.ResultSet = browser.page.findAll("a")
         fn: str = ""
         i: bs4.element.Tag
 
