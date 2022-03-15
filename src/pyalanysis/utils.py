@@ -17,18 +17,20 @@ def get_cache_dir() -> Path:
     log.info("Called " + inspect.stack()[0][3])
 
     # Linux, Unix, AIX, etc.
-    if os.name == 'posix' and sys.platform != 'darwin':
+    if os.name == "posix" and sys.platform != "darwin":
         # use ~/.cache if empty OR not set
-        alan_path = os.environ.get("PYALANYSIS_CACHE", None) \
-              or os.path.expanduser('~/.cache')
+        alan_path = os.environ.get("PYALANYSIS_CACHE", None) or os.path.expanduser(
+            "~/.cache"
+        )
         return Path(alan_path, PYALANYSIS_DIR)
     # Mac OS
-    elif sys.platform == 'darwin':
-        return Path(os.path.expanduser('~'), f'Library/Caches/{PYALANYSIS_DIR}')
+    elif sys.platform == "darwin":
+        return Path(os.path.expanduser("~"), f"Library/Caches/{PYALANYSIS_DIR}")
     # Windows (hopefully)
     else:
-        local = os.environ.get('LOCALAPPDATA', None) \
-                or os.path.expanduser('~\\AppData\\Local')
+        local = os.environ.get("LOCALAPPDATA", None) or os.path.expanduser(
+            "~\\AppData\\Local"
+        )
         return Path(local, PYALANYSIS_DIR)
 
 
@@ -49,6 +51,3 @@ def ensure_cache_dir() -> Path:
         log.debug(f"Found cache dir {cache_dir}")
 
     return cache_dir
-
-
-
