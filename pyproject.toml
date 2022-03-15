@@ -8,6 +8,7 @@ authors = ["Anton Bossenbroek <anton.bossenbroek@gmail.com>"]
 python = "^3.8"
 MechanicalSoup = "^1.1.0"
 urllib3 = "^1.26.8"
+mock = "^4.0.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -24,6 +25,7 @@ pytest-mock = "^3.7.0"
 codecov = "^2.1.12"
 requests-mock = "^1.9.3"
 responses = "^0.19.0"
+mock = "^4.0.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
