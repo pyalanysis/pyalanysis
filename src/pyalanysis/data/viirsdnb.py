@@ -82,7 +82,8 @@ def get_viirs_dnb_monthly_fn(
         log.info(f"Retrieved {fn} from {url}")
 
         if fn == "":
-            raise Exception(f"No SVDNB found at url '{url}'")
+            log.error(f"Couldn't find a link at {url}")
+            raise Exception("No link found")
 
     except Exception as e:
         logging.error(e)
@@ -118,6 +119,7 @@ def get_viirs_dnb_monthly_file(
 
     output_fn: str = os.path.join(cache_dir, fn)
     if os.path.isfile(output_fn):
+        log.info("Found file in cache dir")
         return output_fn
     else:
         log.info("Seek to get data from " + url_to_get)

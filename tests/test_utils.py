@@ -1,14 +1,35 @@
 import os
 import shutil
 import tempfile
-from typing import cast
+import warnings
+from typing import cast, Tuple, Iterator, Callable
 from pathlib import Path
 from unittest import mock, TestCase
 from unittest.mock import Mock
 
+import pytest
+
 from pyalanysis.utils import ensure_cache_dir, get_cache_dir  # type: ignore
 
 _tempdir: str = (tempfile.tempdir or "/tmp") + "/test_pyalanysis"
+
+
+def gen_cache_dir(cache_location:str):
+    def wrap(f):
+        @mock.patch("os.path.expanduser", mock.Mock(return_value=cache_location))
+        @mock.patch("sys.platform", "linux")
+        def wrapped_f(*args):
+            if os.name == "posix":
+                mock_cache_dir = ensure_cache_dir()
+
+                f(*args)
+
+                shutil.rmtree(mock_cache_dir)
+            else:
+                warnings.warn("Don't support other than posix at the moment")
+        return wrapped_f
+    return wrap
+
 
 class TestGetCacheDir(TestCase):
 
