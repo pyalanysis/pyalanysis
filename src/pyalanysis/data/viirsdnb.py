@@ -10,7 +10,12 @@ from typing import Callable, List, Optional, Tuple
 import bs4
 import mechanicalsoup as ms
 
-from pyalanysis.utils import ensure_cache_dir, all_files_exist
+from pyalanysis.utils import (
+    all_files_exist,
+    ensure_cache_dir,
+    load_unmasked_geodata,
+    XGeoData,
+)
 
 log = logging.getLogger(__name__)
 
@@ -25,6 +30,10 @@ MINES_FN_ROI_TOKEN_LOC = 3
 MINES_FN_CONFIG_TOKEN_LOC = 4
 MINES_FN_VERSION_TOKEN_LOC = 5
 MINES_FN_CREATION_DATE_TOKEN_LOC = 6
+
+FILE_EXTENSION_AVG_RAD = ".avg_rade9h.tif"
+FILE_EXTENSION_NUM_OBS = ".cvg.tif"
+FILE_EXTENSION_NUM_CLOUD_FREE_OBS = ".cf_cvg.tif"
 
 
 class ViirsDnbMonthlyType(Enum):
@@ -44,11 +53,32 @@ class ViirsDnbMonthly:
         year: int,
         month: int,
         stray_light_treatment: ViirsDnbMonthlyType,
+        avg_rad9h_fn: str,
+        cvg_fn: str,
+        cf_cvg_fn: str,
     ):
         self.region: str = region
         self.year: int = year
         self.month: int = month
         self.stray_light: ViirsDnbMonthlyType = stray_light_treatment
+        self._avg_rad9h = load_unmasked_geodata(avg_rad9h_fn)
+        self._cvg = load_unmasked_geodata(cvg_fn)
+        self._cf_cvg = load_unmasked_geodata(cf_cvg_fn)
+
+    @property
+    def avg_rad9h(self) -> XGeoData:
+        """Returns the average DNB radiance values dataset"""
+        return self._avg_rad9h
+
+    @property
+    def cvg(self) -> XGeoData:
+        """Returns the number of total DNB observations regardless of cloud cover dataset"""
+        return self._cvg
+
+    @property
+    def cf_cvg(self) -> XGeoData:
+        """Returns the total number of cloud-free observations used in the average dataset"""
+        return self._cf_cvg
 
 
 def get_viirs_dnb_monthly_fn(
@@ -166,13 +196,18 @@ def get_viirs_dnb_monthly_file(
         return output_fp, fn
 
 
-def open_viirs_monthly_file(filespec: Tuple[str,str]):
+def open_viirs_monthly_file(filespec: Tuple[str, str]):
     log.info("Called " + inspect.stack()[0][3])
     base_fn = filespec[1].split(".")[0]
     dst_dir_name = os.path.join(ensure_cache_dir(), base_fn)
 
-    expected_ext = [".avg_rade9h.tif", ".cvg.tif", ".cf_cvg.tif"]
-    expected_files = [ f"{dst_dir_name}/{base_fn}{ext}" for ext in expected_ext]
+    expected_ext = [
+        FILE_EXTENSION_AVG_RAD,
+        FILE_EXTENSION_NUM_OBS,
+        FILE_EXTENSION_NUM_CLOUD_FREE_OBS,
+    ]
+    base_path = f"{dst_dir_name}/{base_fn}"
+    expected_files = [f"{base_path}{ext}" for ext in expected_ext]
 
     if not all_files_exist(expected_files):
         log.debug("Didn't find all expected files, falling back on opening tar ball")
@@ -183,5 +218,18 @@ def open_viirs_monthly_file(filespec: Tuple[str,str]):
     else:
         log.debug("Found all expected files")
 
-    
+    log.debug("Continuing to load all geotiff data")
 
+    fn_tokens = base_fn.split("_")
+
+    return ViirsDnbMonthly(
+        fn_tokens[MINES_FN_ROI_TOKEN_LOC],
+        int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][0:4]),
+        int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][4:6]),
+        ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
+        if fn_tokens[MINES_FN_CONFIG_TOKEN_LOC] == "vcm"
+        else ViirsDnbMonthlyType.NO_STRAY_LIGHT,
+        base_path + FILE_EXTENSION_AVG_RAD,
+        base_path + FILE_EXTENSION_NUM_OBS,
+        base_path + FILE_EXTENSION_NUM_CLOUD_FREE_OBS,
+    )

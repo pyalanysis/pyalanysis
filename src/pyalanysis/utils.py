@@ -1,9 +1,13 @@
+from dataclasses import dataclass
 import inspect
 import logging
 import os
 from pathlib import Path
 import sys
 from typing import List, Union
+
+import rioxarray  # type: ignore
+import xarray
 
 log = logging.getLogger(__name__)
 
@@ -60,3 +64,15 @@ def all_files_exist(files: Union[List[Path], List[str]]) -> bool:
         found = found and os.path.exists(f)
 
     return found
+
+
+@dataclass
+class XGeoData:
+    xds: xarray.Dataset
+    rds: Union[xarray.Dataset, xarray.DataArray]
+
+
+def load_unmasked_geodata(fn: Union[Path, str]) -> XGeoData:
+    xds = xarray.open_dataset(fn, mask_and_scale=False)
+    rds = rioxarray.open_rasterio(fn)
+    return XGeoData(xds, rds)
