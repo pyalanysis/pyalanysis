@@ -132,9 +132,8 @@ class TestViirsDnbMonthlyFile:
                        + "/SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
                )
 
+    @_get_viirs_decorator
     @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
-    @mock.patch("sys.platform", "linux")
-    @mock.patch("os.name", "posix")
     @mock.patch("mechanicalsoup.stateful_browser.StatefulBrowser", mock.Mock())
     @pytest.mark.dependency(name="test_get_viirs_dnb_monthly_file", depends=["test_get_viirs_dnb_monthly_fn"])
     @mock.patch.dict(
@@ -143,31 +142,6 @@ class TestViirsDnbMonthlyFile:
     )
     @responses.activate
     def test_get_viirs_dnb_monthly_file_file_exists(self):
-        responses.add(
-            mines_dir_listing_monthly.method,
-            url=mines_dir_listing_monthly.url,
-            body=mines_dir_listing_monthly.html_content,
-            status=200,
-            content_type="application/html",
-        )
-
-        responses.add(
-            mines_login_form.method,
-            url=re.compile(
-                "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
-            ),
-            body=mines_login_form.html_content,
-            status=200,
-            content_type="application/html",
-        )
-        responses.add(
-            mines_login_form_post.method,
-            url=mines_login_form_post.url,
-            body="",
-            status=200,
-            content_type="application/tar+gz",
-        )
-
         mock_statefulbrowser = cast(Mock, mechanicalsoup.stateful_browser.StatefulBrowser)
 
         dir = ensure_cache_dir()
