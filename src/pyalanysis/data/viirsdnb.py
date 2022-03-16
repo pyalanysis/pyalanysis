@@ -9,12 +9,13 @@ from typing import Callable, List, Optional, Tuple
 
 import bs4
 import mechanicalsoup as ms
+import pandas as pd
+import rioxarray    # type: ignore
+import xarray as xr
 
 from pyalanysis.utils import (
     all_files_exist,
     ensure_cache_dir,
-    load_unmasked_geodata,
-    XGeoData,
 )
 
 log = logging.getLogger(__name__)
@@ -61,24 +62,31 @@ class ViirsDnbMonthly:
         self.year: int = year
         self.month: int = month
         self.stray_light: ViirsDnbMonthlyType = stray_light_treatment
-        self._avg_rad9h = load_unmasked_geodata(avg_rad9h_fn)
-        self._cvg = load_unmasked_geodata(cvg_fn)
-        self._cf_cvg = load_unmasked_geodata(cf_cvg_fn)
+        self._avg_rad9h = rioxarray.open_rasterio(avg_rad9h_fn, mask_and_scale=False)
+        self._avg_rad9h.name = "avg_rad9h"
+        self._cvg = rioxarray.open_rasterio(cvg_fn, mask_and_scale=False)
+        self._cvg.name = "cvg"
+        self._cf_cvg = rioxarray.open_rasterio(cf_cvg_fn, mask_and_scale=False)
+        self._cf_cvg.name = "cf_cvg"
 
     @property
-    def avg_rad9h(self) -> XGeoData:
+    def avg_rad9h(self) -> xr.Dataset:
         """Returns the average DNB radiance values dataset"""
         return self._avg_rad9h
 
     @property
-    def cvg(self) -> XGeoData:
+    def cvg(self) -> xr.Dataset:
         """Returns the number of total DNB observations regardless of cloud cover dataset"""
         return self._cvg
 
     @property
-    def cf_cvg(self) -> XGeoData:
+    def cf_cvg(self) -> xr.Dataset:
         """Returns the total number of cloud-free observations used in the average dataset"""
         return self._cf_cvg
+
+    def get_xarray(self) -> xr.Dataset:
+        """Returns a xarray of all the information"""
+        return xr.merge([self._avg_rad9h, self._cvg, self._cf_cvg])
 
 
 def get_viirs_dnb_monthly_fn(
@@ -222,14 +230,21 @@ def open_viirs_monthly_file(filespec: Tuple[str, str]):
 
     fn_tokens = base_fn.split("_")
 
-    return ViirsDnbMonthly(
-        fn_tokens[MINES_FN_ROI_TOKEN_LOC],
-        int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][0:4]),
-        int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][4:6]),
-        ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
-        if fn_tokens[MINES_FN_CONFIG_TOKEN_LOC] == "vcm"
-        else ViirsDnbMonthlyType.NO_STRAY_LIGHT,
-        base_path + FILE_EXTENSION_AVG_RAD,
-        base_path + FILE_EXTENSION_NUM_OBS,
-        base_path + FILE_EXTENSION_NUM_CLOUD_FREE_OBS,
-    )
+    avg_rad9h = rioxarray.open_rasterio(base_path + FILE_EXTENSION_AVG_RAD, mask_and_scale=False)
+    avg_rad9h.name = "avg_rad9h"
+    cvg = rioxarray.open_rasterio(base_path + FILE_EXTENSION_NUM_OBS, mask_and_scale=False)
+    cvg.name = "cvg"
+    cf_cvg = rioxarray.open_rasterio(base_path + FILE_EXTENSION_NUM_CLOUD_FREE_OBS, mask_and_scale=False)
+    cf_cvg.name = "cf_cvg"
+
+    year = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][0:4])
+    month = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][4:6])
+    start = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][6:8])
+    end = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][16:18])
+    timestamp = pd.Timestamp(year=year, month=month, day=start)
+
+    log.debug(f"Creating xarray for {year}, {month}, start {start} end {end}")
+
+    new_ds = xr.merge([avg_rad9h, cvg, cf_cvg])
+    return new_ds.expand_dims("time").assign_coords(time=("time", [timestamp]))
+
