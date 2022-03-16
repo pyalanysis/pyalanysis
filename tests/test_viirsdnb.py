@@ -132,12 +132,10 @@ class TestViirsDnbMonthlyFile:
         },
     )
     def test_get_viirs_dnb_monthly_file(self):
+        fn = "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
         assert get_viirs_dnb_monthly_file(
             "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
-        ) == (
-            str(ensure_cache_dir())
-            + "/SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
-        )
+        ) == (str(ensure_cache_dir()) + "/" + fn, fn)
 
     @_get_viirs_decorator
     @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
@@ -169,10 +167,7 @@ class TestViirsDnbMonthlyFile:
 
         assert get_viirs_dnb_monthly_file(
             self._loc, self._year, self._month, self._light_correction
-        ) == (
-            str(ensure_cache_dir())
-            + "/SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
-        )
+        ) == (str(ensure_cache_dir()) + "/" + file, file)
         assert not mock_statefulbrowser.called
 
     @mock.patch.dict(

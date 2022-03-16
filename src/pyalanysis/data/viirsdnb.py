@@ -106,7 +106,7 @@ def get_viirs_dnb_monthly_fn(
 
 def get_viirs_dnb_monthly_file(
     region: str, year: int, month: int, stray_light_treatment: ViirsDnbMonthlyType
-) -> str:
+) -> Tuple[str, str]:
     """Either downloads or gets the VIIRS DNB Monthly file from local cache and return the path"""
     log.info("Called " + inspect.stack()[0][3])
 
@@ -117,10 +117,10 @@ def get_viirs_dnb_monthly_file(
     log.info("Test to find if the file exist in the cache dir")
     cache_dir: Path = ensure_cache_dir()
 
-    output_fn: str = os.path.join(cache_dir, fn)
-    if os.path.isfile(output_fn):
+    output_fp: str = os.path.join(cache_dir, fn)
+    if os.path.isfile(output_fp):
         log.info("Found file in cache dir")
-        return output_fn
+        return output_fp, fn
     else:
         log.info("Seek to get data from " + url_to_get)
         browser: ms.stateful_browser.StatefulBrowser = ms.StatefulBrowser(
@@ -154,12 +154,12 @@ def get_viirs_dnb_monthly_file(
             log.info("Raising for any status we may have other than 200")
             resp.raise_for_status()
 
-            log.info(f"Save data to {output_fn}")
-            with open(output_fn, "wb") as outf:
+            log.info(f"Save data to {output_fp}")
+            with open(output_fp, "wb") as outf:
                 outf.write(resp.content)
 
         except Exception as e:
             logging.error(e)
             raise
 
-        return output_fn
+        return output_fp, fn
