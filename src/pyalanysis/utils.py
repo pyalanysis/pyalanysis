@@ -3,6 +3,7 @@ import logging
 import os
 from pathlib import Path
 import sys
+from typing import List, Union
 
 log = logging.getLogger(__name__)
 
@@ -51,3 +52,11 @@ def ensure_cache_dir() -> Path:
         log.debug(f"Found cache dir {cache_dir}")
 
     return cache_dir
+
+
+def all_files_exist(files: Union[List[Path], List[str]]) -> bool:
+    found = True
+    for f in files:
+        found = found and os.path.exists(f)
+
+    return found
