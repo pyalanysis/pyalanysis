@@ -4,12 +4,13 @@ import inspect
 import logging
 import os
 from pathlib import Path
+import tarfile
 from typing import Callable, List, Optional, Tuple
 
 import bs4
 import mechanicalsoup as ms
 
-from pyalanysis.utils import ensure_cache_dir
+from pyalanysis.utils import ensure_cache_dir, all_files_exist
 
 log = logging.getLogger(__name__)
 
@@ -163,3 +164,24 @@ def get_viirs_dnb_monthly_file(
             raise
 
         return output_fp, fn
+
+
+def open_viirs_monthly_file(filespec: Tuple[str,str]):
+    log.info("Called " + inspect.stack()[0][3])
+    base_fn = filespec[1].split(".")[0]
+    dst_dir_name = os.path.join(ensure_cache_dir(), base_fn)
+
+    expected_ext = [".avg_rade9h.tif", ".cvg.tif", ".cf_cvg.tif"]
+    expected_files = [ f"{dst_dir_name}/{base_fn}{ext}" for ext in expected_ext]
+
+    if not all_files_exist(expected_files):
+        log.debug("Didn't find all expected files, falling back on opening tar ball")
+        tarball = tarfile.open(filespec[0])
+        log.debug(f"Attempt to extract tar ball {filespec[0]} in {dst_dir_name}")
+        tarball.extractall(dst_dir_name)
+        tarball.close()
+    else:
+        log.debug("Found all expected files")
+
+    
+
