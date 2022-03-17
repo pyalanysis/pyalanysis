@@ -153,9 +153,9 @@ def coverage(session: Session) -> None:
     session.install("coverage[toml]")
 
     if not session.posargs and any(Path().glob(".coverage.*")):
-        session.run("coverage", "combine")
+        session.run("coverage", "xml")
 
-    session.run("coverage", *args)
+    session.run("coverage", "xml", *args)
 
 
 @session(python=python_versions)
