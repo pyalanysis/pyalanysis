@@ -7,10 +7,16 @@ from unittest import mock, TestCase
 from unittest.mock import Mock
 import warnings
 
-
 from pyalanysis.utils import ensure_cache_dir, get_cache_dir  # type: ignore
 
-_tempdir: str = (tempfile.mkdtemp() or "/tmp") + "/test_pyalanysis"
+
+def get_secure_tempdir():
+    dir_ = tempfile.mkdtemp() or "/tmp" + "/test_pyalanysis"  # type: ignore  # noqa: S108
+    os.chmod(dir_, 0o700)
+    return dir_
+
+
+_tempdir = get_secure_tempdir()
 
 
 def gen_cache_dir(cache_location: str) -> Callable:
@@ -71,8 +77,6 @@ class TestGetCacheDir(TestCase):
 
 
 class TestEnsureDir(TestCase):
-    _tempdir: str = (tempfile.tempdir or "/tmp") + "/test_pyalanysis"
-
     def setUp(self):
         if os.name == "posix":
             if os.path.exists(_tempdir):

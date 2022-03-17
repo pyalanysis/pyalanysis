@@ -19,7 +19,7 @@ from pyalanysis.utils import ensure_cache_dir  # type: ignore
 from .test_utils import gen_cache_dir, get_secure_tempdir
 from .viirsdnb_utils import mines_dir_listing_monthly, mines_login_form, mines_login_form_post  # type: ignore
 
-_tempdir: str = (tempfile.mkdtemp() or "/tmp") + "/test_pyalanysis"
+_tempdir: str = get_secure_tempdir()
 
 
 @pytest.mark.dependency(name="test_get_viirs_dnb_monthly_fn")

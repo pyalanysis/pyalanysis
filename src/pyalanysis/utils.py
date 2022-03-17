@@ -48,6 +48,7 @@ def ensure_cache_dir() -> Path:
         log.info("Attempting to create it")
 
         cache_dir.mkdir(parents=True, exist_ok=True)
+        os.chmod(cache_dir, 0o700)
     else:
         log.debug(f"Found cache dir {cache_dir}")
 
