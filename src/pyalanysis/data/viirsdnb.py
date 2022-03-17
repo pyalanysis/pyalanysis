@@ -44,51 +44,6 @@ class ViirsDnbMonthlyType(Enum):
     NO_STRAY_LIGHT = 2
 
 
-@dataclass
-class ViirsDnbMonthly:
-    """Class to load monthly VIIRS DNB data"""
-
-    def __init__(
-        self,
-        region: str,
-        year: int,
-        month: int,
-        stray_light_treatment: ViirsDnbMonthlyType,
-        avg_rad9h_fn: str,
-        cvg_fn: str,
-        cf_cvg_fn: str,
-    ):
-        self.region: str = region
-        self.year: int = year
-        self.month: int = month
-        self.stray_light: ViirsDnbMonthlyType = stray_light_treatment
-        self._avg_rad9h = rioxarray.open_rasterio(avg_rad9h_fn, mask_and_scale=False)
-        self._avg_rad9h.name = "avg_rad9h"
-        self._cvg = rioxarray.open_rasterio(cvg_fn, mask_and_scale=False)
-        self._cvg.name = "cvg"
-        self._cf_cvg = rioxarray.open_rasterio(cf_cvg_fn, mask_and_scale=False)
-        self._cf_cvg.name = "cf_cvg"
-
-    @property
-    def avg_rad9h(self) -> xr.Dataset:
-        """Returns the average DNB radiance values dataset"""
-        return self._avg_rad9h
-
-    @property
-    def cvg(self) -> xr.Dataset:
-        """Returns the number of total DNB observations regardless of cloud cover dataset"""
-        return self._cvg
-
-    @property
-    def cf_cvg(self) -> xr.Dataset:
-        """Returns the total number of cloud-free observations used in the average dataset"""
-        return self._cf_cvg
-
-    def get_xarray(self) -> xr.Dataset:
-        """Returns a xarray of all the information"""
-        return xr.merge([self._avg_rad9h, self._cvg, self._cf_cvg])
-
-
 def get_viirs_dnb_monthly_fn(
     region: str, year: int, month: int, stray_light_treatment: ViirsDnbMonthlyType
 ) -> Tuple[str, str]:
@@ -240,11 +195,10 @@ def open_viirs_monthly_file(filespec: Tuple[str, str]):
     year = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][0:4])
     month = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][4:6])
     start = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][6:8])
-    end = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][16:18])
-    timestamp = pd.Timestamp(year=year, month=month, day=start)
+    time_range = pd.date_range(f"{year}-{month}-{start}", freq="MS", periods=1)
 
-    log.debug(f"Creating xarray for {year}, {month}, start {start} end {end}")
+    log.debug(f"Creating xarray for {year}, {month}, start {start}")
 
     new_ds = xr.merge([avg_rad9h, cvg, cf_cvg])
-    return new_ds.expand_dims("time").assign_coords(time=("time", [timestamp]))
+    return new_ds.expand_dims("time").assign_coords(time=("time", time_range))
 
