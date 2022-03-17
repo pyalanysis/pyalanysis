@@ -409,6 +409,14 @@ pytz = ">=2020.1"
 test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
+name = "pandas-stubs"
+version = "1.2.0.51"
+description = "Type annotations for Pandas"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pathspec"
 version = "0.9.0"
 description = "Utility library for gitignore style pattern matching of file paths."
@@ -788,7 +796,7 @@ viz = ["matplotlib", "seaborn", "nc-time-axis"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "0dc3420ead7d454e7d6e3d0798c86cbafc78f8d4949aa539fe6455811afb8b85"
+content-hash = "eac2327ad7a2159387e65c28a697b069636502ad1e78d011b7650bce3f4c10f8"
 
 [metadata.files]
 affine = [
@@ -1100,6 +1108,10 @@ pandas = [
     {file = "pandas-1.4.1-cp39-cp39-win32.whl", hash = "sha256:1d85d5f6be66dfd6d1d8d13b9535e342a2214260f1852654b19fa4d7b8d1218b"},
     {file = "pandas-1.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:3129a35d9dad1d80c234dd78f8f03141b914395d23f97cf92a366dcd19f8f8bf"},
     {file = "pandas-1.4.1.tar.gz", hash = "sha256:8db93ec98ac7cb5f8ac1420c10f5e3c43533153f253fe7fb6d891cf5aa2b80d2"},
+]
+pandas-stubs = [
+    {file = "pandas-stubs-1.2.0.51.tar.gz", hash = "sha256:593bd379df0edb7551c172e18acdfe73fb0c55d7746ccf09f29b640740a36f82"},
+    {file = "pandas_stubs-1.2.0.51-py3-none-any.whl", hash = "sha256:3e997c890eeca71d0cabe3ef3be99903ec75e0e82283f7b59ff1b997beebd581"},
 ]
 pathspec = [
     {file = "pathspec-0.9.0-py2.py3-none-any.whl", hash = "sha256:7d15c4ddb0b5c802d161efc417ec1a2558ea2653c2e8ad9c19098201dc1c993a"},
