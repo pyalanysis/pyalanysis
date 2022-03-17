@@ -2,17 +2,19 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
-from typing import cast
+from typing import cast, Callable
 from unittest import mock, TestCase
 from unittest.mock import Mock
 import warnings
 
+import logging
+
 from pyalanysis.utils import ensure_cache_dir, get_cache_dir  # type: ignore
 
-_tempdir: str = (tempfile.tempdir or "/tmp") + "/test_pyalanysis"
+_tempdir: str = (tempfile.mkdtemp() or "/tmp") + "/test_pyalanysis"
 
 
-def gen_cache_dir(cache_location: str):
+def gen_cache_dir(cache_location: str) -> Callable:
     def wrap(f):
         @mock.patch("os.path.expanduser", mock.Mock(return_value=cache_location))
         @mock.patch("sys.platform", "linux")
@@ -80,12 +82,12 @@ class TestEnsureDir(TestCase):
     @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
     def test_ensure_cache_dir_new_dir(self) -> None:
         if os.name == "posix":
-            ensure_cache_dir()
+            cache_dir = ensure_cache_dir()
 
             mock_expanduser = cast(Mock, os.path.expanduser)
 
             assert mock_expanduser
-            assert os.path.exists(_tempdir)
+            assert os.path.exists(cache_dir)
 
     @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
     def test_ensure_cache_dir_existing_dir(self) -> None:
@@ -98,9 +100,9 @@ class TestEnsureDir(TestCase):
             mock_expanduser = cast(Mock, os.path.expanduser)
 
             assert mock_expanduser
-            assert os.path.exists(_tempdir)
+            assert os.path.exists(cache_dir)
 
-    def tearDown(self) -> None:
+    def teardown(self) -> None:
         if os.name == "posix":
             if os.path.exists(_tempdir):
                 shutil.rmtree(_tempdir)
