@@ -1,40 +1,41 @@
+---
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.940'
-    hooks:
-    -   id: mypy
-        additional_dependencies: [tokenize-rt==3.2.0]
--   repo: https://github.com/adrienverge/yamllint
-    rev: 'v1.26.3'
-    hooks:
-    -   id: yamllint
-        name: yamllint
-        entry: yamllint
-        language: python
-        types: [yaml]
--   repo: local
-    hooks:
-    -   id: black
-        name: black
-        entry: poetry run black
-        language: system
-        types: [python]
-    -   id: flake8
-        name: flake8
-        entry: poetry run flake8
-        language: system
-        types: [python]
-    -   id: pytest
-        name: pytest
-        entry: poetry install && poetry run pytest
-        language: system
-        types: [python]
-        pass_filenames: false
-        always_run: true
-        stages: [push]
+ - repo: https://github.com/pre-commit/pre-commit-hooks
+   rev: v2.3.0
+   hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+ - repo: https://github.com/pre-commit/mirrors-mypy
+   rev: 'v0.940'
+   hooks:
+    - id: mypy
+      additional_dependencies: [tokenize-rt==3.2.0]
+ - repo: https://github.com/adrienverge/yamllint
+   rev: 'v1.26.3'
+   hooks:
+    - id: yamllint
+      name: yamllint
+      entry: yamllint
+      language: python
+      types: [yaml]
+ - repo: local
+   hooks:
+    - id: black
+      name: black
+      entry: poetry run black
+      language: system
+      types: [python]
+    - id: flake8
+      name: flake8
+      entry: poetry run flake8
+      language: system
+      types: [python]
+    - id: pytest
+      name: pytest
+      entry: poetry install && poetry run pytest
+      language: system
+      types: [python]
+      pass_filenames: false
+      always_run: true
+      stages: [push]
