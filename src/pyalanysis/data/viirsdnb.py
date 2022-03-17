@@ -10,7 +10,7 @@ from typing import Callable, List, Optional, Tuple
 import bs4
 import mechanicalsoup as ms
 import pandas as pd
-import rioxarray    # type: ignore
+import rioxarray  # type: ignore
 import xarray as xr
 
 from pyalanysis.utils import (
@@ -185,11 +185,17 @@ def open_viirs_monthly_file(filespec: Tuple[str, str]):
 
     fn_tokens = base_fn.split("_")
 
-    avg_rad9h = rioxarray.open_rasterio(base_path + FILE_EXTENSION_AVG_RAD, mask_and_scale=False)
+    avg_rad9h = rioxarray.open_rasterio(
+        base_path + FILE_EXTENSION_AVG_RAD, mask_and_scale=False
+    )
     avg_rad9h.name = "avg_rad9h"
-    cvg = rioxarray.open_rasterio(base_path + FILE_EXTENSION_NUM_OBS, mask_and_scale=False)
+    cvg = rioxarray.open_rasterio(
+        base_path + FILE_EXTENSION_NUM_OBS, mask_and_scale=False
+    )
     cvg.name = "cvg"
-    cf_cvg = rioxarray.open_rasterio(base_path + FILE_EXTENSION_NUM_CLOUD_FREE_OBS, mask_and_scale=False)
+    cf_cvg = rioxarray.open_rasterio(
+        base_path + FILE_EXTENSION_NUM_CLOUD_FREE_OBS, mask_and_scale=False
+    )
     cf_cvg.name = "cf_cvg"
 
     year = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][0:4])
@@ -201,4 +207,3 @@ def open_viirs_monthly_file(filespec: Tuple[str, str]):
 
     new_ds = xr.merge([avg_rad9h, cvg, cf_cvg])
     return new_ds.expand_dims("time").assign_coords(time=("time", time_range))
-

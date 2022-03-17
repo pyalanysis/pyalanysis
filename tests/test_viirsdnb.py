@@ -10,8 +10,12 @@ import mechanicalsoup
 import pytest
 import responses  # type: ignore
 
-from pyalanysis.data import get_viirs_dnb_monthly_file, get_viirs_dnb_monthly_fn, open_viirs_monthly_file, \
-    ViirsDnbMonthlyType # type: ignore
+from pyalanysis.data import (
+    get_viirs_dnb_monthly_file,
+    get_viirs_dnb_monthly_fn,
+    open_viirs_monthly_file,
+    ViirsDnbMonthlyType,
+)  # type: ignore
 from pyalanysis.utils import ensure_cache_dir  # type: ignore
 from .test_utils import gen_cache_dir
 from .viirsdnb_utils import mines_dir_listing_monthly, mines_login_form, mines_login_form_post  # type: ignore
@@ -208,11 +212,20 @@ class TestOpen:
     @mock.patch("sys.platform", "linux")
     @mock.patch("os.name", "posix")
     def test_open_viirs_dnb_monthly_vcmslcfg_load(self) -> None:
-        tar_ball_name = "SVDNB_npp_19001001-19001031_00N060E_vcmslcfg_v10_c190010112300.tgz"
-        shutil.copy(os.path.join(".", "tests", "test_viirs_monthly_vcmslcfg_load", tar_ball_name), _tempdir)
-        res = open_viirs_monthly_file((os.path.join(_tempdir, tar_ball_name), tar_ball_name))
+        tar_ball_name = (
+            "SVDNB_npp_19001001-19001031_00N060E_vcmslcfg_v10_c190010112300.tgz"
+        )
+        shutil.copy(
+            os.path.join(
+                ".", "tests", "test_viirs_monthly_vcmslcfg_load", tar_ball_name
+            ),
+            _tempdir,
+        )
+        res = open_viirs_monthly_file(
+            (os.path.join(_tempdir, tar_ball_name), tar_ball_name)
+        )
 
-        assert res.dims == {'band': 1, 'x': 481, 'y': 481, 'time': 1}
+        assert res.dims == {"band": 1, "x": 481, "y": 481, "time": 1}
 
     def teardown(self) -> None:
         if os.name == "posix":
