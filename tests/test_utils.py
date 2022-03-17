@@ -66,7 +66,7 @@ class TestGetCacheDir(TestCase):
 
         mock_expanduser = cast(Mock, os.path.expanduser)
         assert mock_expanduser.called
-        assert cache_dir == Path("/tmp/test_pyalanysis/pyalanysis")
+        assert cache_dir == Path(f"{_tempdir}/pyalanysis")
 
 
 class TestEnsureDir(TestCase):
