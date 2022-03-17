@@ -1,0 +1,22 @@
+[run]
+include=
+    src/*
+    tests/*
+    */lib/python*/site-packages/pyalanysis/*
+    */lib/python*/site-packages/pyalanysis.py
+
+
+[paths]
+source=src
+    */lib/python*/site-packages/
+
+
+
+[report]
+exclude_lines =
+    if self.debug:
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:
+ignore_errors = True
+show_missing = True
