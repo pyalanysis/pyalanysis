@@ -148,14 +148,14 @@ def tests(session: Session, poetry: Optional[str]) -> None:
 @session
 def coverage(session: Session) -> None:
     """Produce the coverage report."""
-    args = session.posargs or ["report"]
+    args = session.posargs or ["xml"]
 
     session.install("coverage[toml]")
 
     if not session.posargs and any(Path().glob(".coverage.*")):
         session.run("coverage", "combine")
 
-    session.run("coverage", "xml", *args)
+    session.run("coverage", *args)
 
 
 @session(python=python_versions)
