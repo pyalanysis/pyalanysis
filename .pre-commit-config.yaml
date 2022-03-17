@@ -10,6 +10,14 @@ repos:
     hooks:
     -   id: mypy
         additional_dependencies: [tokenize-rt==3.2.0]
+-   repo: https://github.com/adrienverge/yamllint
+    rev: 'v1.26.3'
+    hooks:
+    -   id: yamllint
+        name: yamllint
+        entry: yamllint
+        language: python
+        types: [yaml]
 -   repo: local
     hooks:
     -   id: black
