@@ -1,13 +1,9 @@
-from dataclasses import dataclass
 import inspect
 import logging
 import os
 from pathlib import Path
 import sys
 from typing import List, Union
-
-import rioxarray  # type: ignore
-import xarray
 
 log = logging.getLogger(__name__)
 

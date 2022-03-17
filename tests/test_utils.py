@@ -2,12 +2,11 @@ import os
 from pathlib import Path
 import shutil
 import tempfile
-from typing import cast, Callable
+from typing import Callable, cast
 from unittest import mock, TestCase
 from unittest.mock import Mock
 import warnings
 
-import logging
 
 from pyalanysis.utils import ensure_cache_dir, get_cache_dir  # type: ignore
 

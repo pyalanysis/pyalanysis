@@ -1,7 +1,6 @@
 import os
 import re
 import shutil
-import tempfile
 from typing import Callable, cast
 from unittest import mock
 from unittest.mock import Mock
@@ -17,7 +16,7 @@ from pyalanysis.data import (
     ViirsDnbMonthlyType,
 )  # type: ignore
 from pyalanysis.utils import ensure_cache_dir  # type: ignore
-from .test_utils import gen_cache_dir
+from .test_utils import gen_cache_dir, get_secure_tempdir
 from .viirsdnb_utils import mines_dir_listing_monthly, mines_login_form, mines_login_form_post  # type: ignore
 
 _tempdir: str = (tempfile.mkdtemp() or "/tmp") + "/test_pyalanysis"
