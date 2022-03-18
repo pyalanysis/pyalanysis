@@ -3,7 +3,7 @@ from pathlib import Path
 import shutil
 import tempfile
 from typing import Callable, cast
-from unittest import mock, TestCase
+from unittest import mock
 from unittest.mock import Mock
 import warnings
 
@@ -38,74 +38,59 @@ def gen_cache_dir(cache_location: str) -> Callable:
     return wrap
 
 
-class TestGetCacheDir(TestCase):
-    def setUp(self):
-        if os.name == "posix":
-            if os.path.exists(_tempdir):
-                shutil.rmtree(_tempdir)
-
-    @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
-    @mock.patch("os.makedirs", mock.Mock(return_value=0))
-    @mock.patch("sys.platform", "linux")
-    def test_get_cache_dir(self) -> None:
-        if os.name == "posix":
-            get_cache_dir()
-
-            mock_expanduser = cast(Mock, os.path.expanduser)
-            makedirs = cast(Mock, os.makedirs)
-
-            assert mock_expanduser.called
-            assert not makedirs.called
-
-    @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
-    @mock.patch("sys.platform", "darwin")
-    def test_get_cache_dir_mac(self) -> None:
+@gen_cache_dir(_tempdir)
+@mock.patch("os.makedirs", mock.Mock(return_value=0))
+def test_get_cache_dir() -> None:
+    if os.name == "posix":
         get_cache_dir()
 
         mock_expanduser = cast(Mock, os.path.expanduser)
-        assert mock_expanduser.called
+        makedirs = cast(Mock, os.makedirs)
 
-    @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
-    @mock.patch("sys.platform", "win64")
-    @mock.patch("os.name", "win64")
-    def test_get_cache_dir_win(self) -> None:
-        cache_dir = get_cache_dir()
+        assert mock_expanduser.called
+        assert not makedirs.called
+
+
+@gen_cache_dir(_tempdir)
+@mock.patch("sys.platform", "darwin")
+def test_get_cache_dir_mac() -> None:
+    get_cache_dir()
+
+    mock_expanduser = cast(Mock, os.path.expanduser)
+    assert mock_expanduser.called
+
+
+@mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
+@mock.patch("sys.platform", "win64")
+@mock.patch("os.name", "win64")
+def test_get_cache_dir_win() -> None:
+    cache_dir = get_cache_dir()
+
+    mock_expanduser = cast(Mock, os.path.expanduser)
+    assert mock_expanduser.called
+    assert cache_dir == Path(f"{_tempdir}/pyalanysis")
+
+
+@gen_cache_dir(_tempdir)
+def test_ensure_cache_dir_new_dir() -> None:
+    if os.name == "posix":
+        cache_dir = ensure_cache_dir()
 
         mock_expanduser = cast(Mock, os.path.expanduser)
-        assert mock_expanduser.called
-        assert cache_dir == Path(f"{_tempdir}/pyalanysis")
+
+        assert mock_expanduser
+        assert os.path.exists(cache_dir)
 
 
-class TestEnsureDir(TestCase):
-    def setUp(self):
-        if os.name == "posix":
-            if os.path.exists(_tempdir):
-                shutil.rmtree(_tempdir)
+@gen_cache_dir(_tempdir)
+def test_ensure_cache_dir_existing_dir() -> None:
+    if os.name == "posix":
+        cache_dir = get_cache_dir()
+        cache_dir.mkdir(parents=True, exist_ok=True)
 
-    @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
-    def test_ensure_cache_dir_new_dir(self) -> None:
-        if os.name == "posix":
-            cache_dir = ensure_cache_dir()
+        assert cache_dir == ensure_cache_dir()
 
-            mock_expanduser = cast(Mock, os.path.expanduser)
+        mock_expanduser = cast(Mock, os.path.expanduser)
 
-            assert mock_expanduser
-            assert os.path.exists(cache_dir)
-
-    @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
-    def test_ensure_cache_dir_existing_dir(self) -> None:
-        if os.name == "posix":
-            cache_dir = get_cache_dir()
-            cache_dir.mkdir(parents=True, exist_ok=True)
-
-            assert cache_dir == ensure_cache_dir()
-
-            mock_expanduser = cast(Mock, os.path.expanduser)
-
-            assert mock_expanduser
-            assert os.path.exists(cache_dir)
-
-    def teardown(self) -> None:
-        if os.name == "posix":
-            if os.path.exists(_tempdir):
-                shutil.rmtree(_tempdir)
+        assert mock_expanduser
+        assert os.path.exists(cache_dir)
