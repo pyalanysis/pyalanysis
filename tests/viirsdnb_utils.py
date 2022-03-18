@@ -5,9 +5,10 @@ import responses  # type: ignore
 
 MockLink = namedtuple("MockLink", "url html_content method")
 
-mines_login_form = MockLink(
-    "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz",
-    """
+mines_login_form = {
+    "monthly_vcmslcfg": MockLink(
+        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz",
+        """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" class="login-pf">
 
@@ -121,22 +122,26 @@ mines_login_form = MockLink(
 </body>
 </html>
 """,
-    responses.GET,
-)
+        responses.GET,
+    )
+}
 
-mines_login_form_post = MockLink(
-    (
-        "https://eogauth.mines.edu/auth/realms/master/login-actions/authenticate?session_code="
-        + "YeRo9eN7i3k6H-qVN9NQRneZNxi89c1quseqzJmGggE&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&"
-        + "client_id=eogdata_oidc&tab_id=Wbk6_AZ6_Xg"
-    ),
-    "",
-    responses.POST,
-)
+mines_login_form_post = {
+    "monthly_vcmslcfg": MockLink(
+        (
+            "https://eogauth.mines.edu/auth/realms/master/login-actions/authenticate?session_code="
+            + "YeRo9eN7i3k6H-qVN9NQRneZNxi89c1quseqzJmGggE&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&"
+            + "client_id=eogdata_oidc&tab_id=Wbk6_AZ6_Xg"
+        ),
+        "",
+        responses.POST,
+    )
+}
 
-mines_dir_listing_monthly = MockLink(
-    "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg",
-    """
+mines_dir_listing = {
+    "monthly_vcmslcfg": MockLink(
+        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg",
+        """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -262,5 +267,6 @@ mines_dir_listing_monthly = MockLink(
 </body>
 </html>
     """,
-    responses.GET,
-)
+        responses.GET,
+    )
+}

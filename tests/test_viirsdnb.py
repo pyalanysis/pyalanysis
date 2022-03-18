@@ -17,7 +17,7 @@ from pyalanysis.data import (
 )  # type: ignore
 from pyalanysis.utils import ensure_cache_dir  # type: ignore
 from .test_utils import gen_cache_dir, get_secure_tempdir
-from .viirsdnb_utils import mines_dir_listing_monthly, mines_login_form, mines_login_form_post  # type: ignore
+from .viirsdnb_utils import mines_dir_listing, mines_login_form, mines_login_form_post  # type: ignore
 
 _tempdir: str = get_secure_tempdir()
 
@@ -26,9 +26,9 @@ _tempdir: str = get_secure_tempdir()
 @responses.activate
 def test_get_viirs_dnb_monthly_fn():
     responses.add(
-        mines_dir_listing_monthly.method,
-        url=mines_dir_listing_monthly.url,
-        body=mines_dir_listing_monthly.html_content,
+        mines_dir_listing["monthly_vcmslcfg"].method,
+        url=mines_dir_listing["monthly_vcmslcfg"].url,
+        body=mines_dir_listing["monthly_vcmslcfg"].html_content,
         status=200,
         content_type="application/html",
     )
@@ -45,9 +45,9 @@ def test_get_viirs_dnb_monthly_fn():
 @responses.activate
 def test_get_viirs_dnb_monthly_fn_error_404():
     responses.add(
-        mines_dir_listing_monthly.method,
-        url=mines_dir_listing_monthly.url,
-        body=mines_dir_listing_monthly.html_content,
+        mines_dir_listing["monthly_vcmslcfg"].method,
+        url=mines_dir_listing["monthly_vcmslcfg"].url,
+        body=mines_dir_listing["monthly_vcmslcfg"].html_content,
         status=404,
         content_type="application/html",
     )
@@ -63,8 +63,8 @@ def test_get_viirs_dnb_monthly_fn_error_404():
 @responses.activate
 def test_get_viirs_dnb_monthly_fn_error_nolink():
     responses.add(
-        mines_dir_listing_monthly.method,
-        url=mines_dir_listing_monthly.url,
+        mines_dir_listing["monthly_vcmslcfg"].method,
+        url=mines_dir_listing["monthly_vcmslcfg"].url,
         body="<HTML><body><text>dummy</text></body></HTML>",
         status=200,
         content_type="application/html",
@@ -89,25 +89,25 @@ def _get_viirs_decorator(fun: Callable) -> Callable[[object], None]:
     @responses.activate
     def magic(self):
         responses.add(
-            mines_dir_listing_monthly.method,
-            url=mines_dir_listing_monthly.url,
-            body=mines_dir_listing_monthly.html_content,
+            mines_dir_listing["monthly_vcmslcfg"].method,
+            url=mines_dir_listing["monthly_vcmslcfg"].url,
+            body=mines_dir_listing["monthly_vcmslcfg"].html_content,
             status=200,
             content_type="application/html",
         )
 
         responses.add(
-            mines_login_form.method,
+            mines_login_form["monthly_vcmslcfg"].method,
             url=re.compile(
                 "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
             ),
-            body=mines_login_form.html_content,
+            body=mines_login_form["monthly_vcmslcfg"].html_content,
             status=200,
             content_type="application/html",
         )
         responses.add(
-            mines_login_form_post.method,
-            url=mines_login_form_post.url,
+            mines_login_form_post["monthly_vcmslcfg"].method,
+            url=mines_login_form_post["monthly_vcmslcfg"].url,
             body="",
             status=200,
             content_type="application/tar+gz",
