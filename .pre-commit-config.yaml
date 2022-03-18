@@ -31,8 +31,3 @@ repos:
       entry: poetry run flake8
       language: system
       types: [python]
-    - id: pytest
-      name: pytest
-      entry: poetry install && poetry run pytest
-      language: system
-      types: [python]
