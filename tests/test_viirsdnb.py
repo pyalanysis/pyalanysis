@@ -96,44 +96,45 @@ def test_get_viirs_dnb_monthly_fn_error_nolink():
     assert "No link found" in str(excinfo.value)
 
 
-def _get_viirs_decorator(fun: Callable) -> Callable[[object], None]:
-    @gen_cache_dir(_tempdir)
-    @mock.patch("sys.platform", "linux")
-    @mock.patch("os.name", "posix")
-    @pytest.mark.dependency(
-        name="test_get_viirs_dnb_monthly_file",
-        depends=["test_get_viirs_dnb_monthly_fn"],
-    )
-    @responses.activate
-    def magic(self):
-        responses.add(
-            mines_dir_listing["monthly_vcmslcfg"].method,
-            url=mines_dir_listing["monthly_vcmslcfg"].url,
-            body=mines_dir_listing["monthly_vcmslcfg"].html_content,
-            status=200,
-            content_type="application/html",
-        )
 
-        responses.add(
-            mines_login_form["monthly_vcmslcfg"].method,
-            url=re.compile(
-                "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
-            ),
-            body=mines_login_form["monthly_vcmslcfg"].html_content,
-            status=200,
-            content_type="application/html",
-        )
-        responses.add(
-            mines_login_form_post["monthly_vcmslcfg"].method,
-            url=mines_login_form_post["monthly_vcmslcfg"].url,
-            body="",
-            status=200,
-            content_type="application/tar+gz",
-        )
-        fun(self)
 
-    return magic
+def viirs_response_local_dir(test_type: str, login_catch_url: re.Pattern) -> Callable:
+    def wrap(f: Callable) -> Callable[[object], None]:
+        @gen_cache_dir(_tempdir)
+        @mock.patch("sys.platform", "linux")
+        @mock.patch("os.name", "posix")
+        @pytest.mark.dependency(
+            name="test_get_viirs_dnb_monthly_file",
+            depends=["test_get_viirs_dnb_monthly_fn"],
+        )
+        @responses.activate
+        def wrapped_f(*args):
+            responses.add(
+                mines_dir_listing[test_type].method,
+                url=mines_dir_listing[test_type].url,
+                body=mines_dir_listing[test_type].html_content,
+                status=200,
+                content_type="application/html",
+            )
 
+            responses.add(
+                mines_login_form[test_type].method,
+                url=login_catch_url,
+                body=mines_login_form[test_type].html_content,
+                status=200,
+                content_type="application/html",
+            )
+            responses.add(
+                mines_login_form_post[test_type].method,
+                url=mines_login_form_post[test_type].url,
+                body="",
+                status=200,
+                content_type="application/tar+gz",
+            )
+            f(*args)
+
+        return wrapped_f
+    return wrap
 
 class TestViirsDnbMonthlyFile:
     _loc: str = "00N060E"
@@ -141,11 +142,9 @@ class TestViirsDnbMonthlyFile:
     _month: int = 9
     _light_correction: ViirsDnbMonthlyType = ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
 
-    @_get_viirs_decorator
-    @pytest.mark.dependency(
-        name="test_get_viirs_dnb_monthly_file",
-        depends=["test_get_viirs_dnb_monthly_fn"],
-    )
+    @viirs_response_local_dir("monthly_vcmslcfg", re.compile(
+        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
+    ))
     @mock.patch.dict(
         os.environ,
         {
@@ -159,13 +158,11 @@ class TestViirsDnbMonthlyFile:
             "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
         ) == (str(ensure_cache_dir()) + "/" + fn, fn)
 
-    @_get_viirs_decorator
+    @viirs_response_local_dir("monthly_vcmslcfg", re.compile(
+        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
+    ))
     @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
     @mock.patch("mechanicalsoup.stateful_browser.StatefulBrowser", mock.Mock())
-    @pytest.mark.dependency(
-        name="test_get_viirs_dnb_monthly_file",
-        depends=["test_get_viirs_dnb_monthly_fn"],
-    )
     @mock.patch.dict(
         os.environ,
         {
@@ -196,7 +193,9 @@ class TestViirsDnbMonthlyFile:
         os.environ,
         {},
     )
-    @_get_viirs_decorator
+    @viirs_response_local_dir("monthly_vcmslcfg", re.compile(
+        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
+    ))
     def test_no_username(self):
         with pytest.raises(Exception) as excinfo:
             get_viirs_dnb_monthly_file(
@@ -209,7 +208,9 @@ class TestViirsDnbMonthlyFile:
         os.environ,
         {"PYALANYSIS_MINES_USERNAME": "someval"},
     )
-    @_get_viirs_decorator
+    @viirs_response_local_dir("monthly_vcmslcfg", re.compile(
+        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
+    ))
     def test_no_password(self):
         with pytest.raises(Exception) as excinfo:
             get_viirs_dnb_monthly_file(
