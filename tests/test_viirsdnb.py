@@ -145,6 +145,9 @@ class TestViirsDnbMonthlyFile:
     @viirs_response_local_dir("monthly_vcmslcfg", re.compile(
         "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
     ))
+    @viirs_response_local_dir("monthly_vcmcfg", re.compile(
+        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmcfg/.*"
+    ))
     @mock.patch.dict(
         os.environ,
         {
@@ -153,9 +156,13 @@ class TestViirsDnbMonthlyFile:
         },
     )
     def test_get_viirs_dnb_monthly_file(self):
-        fn = "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
+        fn_sl = "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
+        fn = "SVDNB_npp_19000901-19000930_00N060E_vcmcfg_v10_c190010112300.tgz"
         assert get_viirs_dnb_monthly_file(
             "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
+        ) == (str(ensure_cache_dir()) + "/" + fn_sl, fn_sl)
+        assert get_viirs_dnb_monthly_file(
+            "00N060E", 1900, 9, ViirsDnbMonthlyType.NO_STRAY_LIGHT
         ) == (str(ensure_cache_dir()) + "/" + fn, fn)
 
     @viirs_response_local_dir("monthly_vcmslcfg", re.compile(
@@ -219,10 +226,6 @@ class TestViirsDnbMonthlyFile:
 
         assert "PYALANYSIS_MINES_PASSWORD" in str(excinfo.value)
 
-    def teardown(self) -> None:
-        if os.name == "posix":
-            if os.path.exists(_tempdir):
-                shutil.rmtree(_tempdir)
 
 
 class TestOpen:
@@ -244,8 +247,3 @@ class TestOpen:
         )
 
         assert res.dims == {"band": 1, "x": 481, "y": 481, "time": 1}
-
-    def teardown(self) -> None:
-        if os.name == "posix":
-            if os.path.exists(_tempdir):
-                shutil.rmtree(_tempdir)
