@@ -156,24 +156,24 @@ mines_login_form = {
                     <div class="kc-dropdown" id="kc-locale-dropdown">
                         <a href="#" id="kc-current-locale-link">English</a>
                         <ul>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=de">Deutsch</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=no">Norsk</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=ru">Русский</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=sv">Svenska</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=pt-BR">Português (Brasil)</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=lt">Lietuvių</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=en">English</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=it">Italiano</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=fr">Français</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=zh-CN">中文简体</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=es">Español</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=cs">Čeština</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=ja">日本語</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=sk">Slovenčina</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=pl">Polish</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=ca">Català</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=nl">Nederlands</a></li>
-                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;kc_locale=tr">tr</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=de">Deutsch</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=no">Norsk</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=ru">Русский</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=sv">Svenska</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=pt-BR">Português (Brasil)</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=lt">Lietuvių</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=en">English</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=it">Italiano</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=fr">Français</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=zh-CN">中文简体</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=es">Español</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=cs">Čeština</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=ja">日本語</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=sk">Slovenčina</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=pl">Polish</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=ca">Català</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=nl">Nederlands</a></li>
+                                <li class="kc-dropdown-item"><a href="/auth/realms/master/login-actions/authenticate?client_id=eogdata_oidc&tab_id=uBYGaKPknp4&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&kc_locale=tr">tr</a></li>
                         </ul>
                     </div>
                 </div>
@@ -188,7 +188,7 @@ mines_login_form = {
 
     <div id="kc-form" >
       <div id="kc-form-wrapper" >
-            <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="https://eogauth.mines.edu/auth/realms/master/login-actions/authenticate?session_code=OHHYRdMyNESqUCaF6KWhvUUjfNwcYpNUeRl_lfxm6S0&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&amp;client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4" method="post">
+            <form id="kc-form-login" onsubmit="login.disabled = true; return true;" action="https://eogauth.mines.edu/auth/realms/master/login-actions/authenticate?session_code=OHHYRdMyNESqUCaF6KWhvUUjfNwcYpNUeRl_lfxm6S0&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&client_id=eogdata_oidc&tab_id=uBYGaKPknp4" method="post">
                 <div class="form-group">
                     <label for="username" class="control-label">Email</label>
 
@@ -209,7 +209,7 @@ mines_login_form = {
                             </div>
                         </div>
                         <div class="">
-                                <span><a tabindex="5" href="/auth/realms/master/login-actions/reset-credentials?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4">Forgot Password?</a></span>
+                                <span><a tabindex="5" href="/auth/realms/master/login-actions/reset-credentials?client_id=eogdata_oidc&tab_id=uBYGaKPknp4">Forgot Password?</a></span>
                         </div>
 
                   </div>
@@ -227,7 +227,7 @@ mines_login_form = {
               <div id="kc-info" class="login-pf-signup">
                   <div id="kc-info-wrapper" class="">
             <div id="kc-registration">
-                <span>New user? <a tabindex="6" href="/auth/realms/master/login-actions/registration?client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4">Register</a></span>
+                <span>New user? <a tabindex="6" href="/auth/realms/master/login-actions/registration?client_id=eogdata_oidc&tab_id=uBYGaKPknp4">Register</a></span>
             </div>
 
                   </div>
@@ -254,8 +254,8 @@ mines_login_form_post = {
     ),
     "monthly_vcmcfg": MockLink(
         "https://eogauth.mines.edu/auth/realms/master/login-actions/authenticate?session_code="
-        + "OHHYRdMyNESqUCaF6KWhvUUjfNwcYpNUeRl_lfxm6S0&amp;execution=c7533e04-71c8-4262-9c0e-29c77ac47521&"
-        + "amp;client_id=eogdata_oidc&amp;tab_id=uBYGaKPknp4",
+        + "OHHYRdMyNESqUCaF6KWhvUUjfNwcYpNUeRl_lfxm6S0&execution=c7533e04-71c8-4262-9c0e-29c77ac47521&"
+        + "client_id=eogdata_oidc&tab_id=uBYGaKPknp4",
         "",
         responses.POST,
     ),
