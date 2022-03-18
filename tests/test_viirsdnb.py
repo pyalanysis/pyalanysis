@@ -41,6 +41,24 @@ def test_get_viirs_dnb_monthly_fn():
         "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz",
     )
 
+    responses.add(
+        mines_dir_listing["monthly_vcmcfg"].method,
+        url=mines_dir_listing["monthly_vcmcfg"].url,
+        body=mines_dir_listing["monthly_vcmcfg"].html_content,
+        status=200,
+        content_type="application/html",
+    )
+
+    assert get_viirs_dnb_monthly_fn(
+        "00N060E", 1900, 9, ViirsDnbMonthlyType.NO_STRAY_LIGHT
+    ) == (
+               "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmcfg/"
+               + "SVDNB_npp_19000901-19000930_00N060E_vcmcfg_v10_c190010112300.tgz",
+               "SVDNB_npp_19000901-19000930_00N060E_vcmcfg_v10_c190010112300.tgz",
+           )
+
+
+
 
 @responses.activate
 def test_get_viirs_dnb_monthly_fn_error_404():
