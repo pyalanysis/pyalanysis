@@ -1,0 +1,14 @@
+---
+name: pyalanysis_demo_env
+channels:
+  - conda-forge
+dependencies:
+  - python==3.8
+  - rioxarray==0.10
+  - pandas
+  - numpy
+  - matplotlib
+  - ipykernel
+  - pip==22
+  - pip:
+    - git+https://github.com/pyalanysis/pyalanysis.git@develop
