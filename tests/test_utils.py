@@ -29,7 +29,9 @@ def gen_cache_dir(cache_location: str) -> Callable:
 
                 f(*args)
 
-                shutil.rmtree(mock_cache_dir)
+                # If we are called twice the directory may already be deleted
+                if os.path.exists(mock_cache_dir):
+                    shutil.rmtree(mock_cache_dir)
             else:
                 warnings.warn("Don't support other than posix at the moment")
 
