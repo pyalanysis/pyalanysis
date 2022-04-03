@@ -7,12 +7,11 @@ from unittest.mock import Mock
 
 import mechanicalsoup
 import pytest
+import rasterio.crs
 import responses  # type: ignore
 
 from pyalanysis.data import (
-    get_viirs_dnb_monthly_file,
-    get_viirs_dnb_monthly_fn,
-    open_viirs_monthly_file,
+    ViirsDnbMonthlyDataLoader,
     ViirsDnbMonthlyType,
 )  # type: ignore
 from pyalanysis.utils import ensure_cache_dir  # type: ignore
@@ -32,29 +31,14 @@ def test_get_viirs_dnb_monthly_fn():
         status=200,
         content_type="application/html",
     )
+    vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
 
-    assert get_viirs_dnb_monthly_fn(
+    assert vdl.get_viirs_dnb_monthly_fn(
         "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
     ) == (
         "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/"
         + "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz",
         "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz",
-    )
-
-    responses.add(
-        mines_dir_listing["monthly_vcmcfg"].method,
-        url=mines_dir_listing["monthly_vcmcfg"].url,
-        body=mines_dir_listing["monthly_vcmcfg"].html_content,
-        status=200,
-        content_type="application/html",
-    )
-
-    assert get_viirs_dnb_monthly_fn(
-        "00N060E", 1900, 9, ViirsDnbMonthlyType.NO_STRAY_LIGHT
-    ) == (
-        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmcfg/"
-        + "SVDNB_npp_19000901-19000930_00N060E_vcmcfg_v10_c190010112300.tgz",
-        "SVDNB_npp_19000901-19000930_00N060E_vcmcfg_v10_c190010112300.tgz",
     )
 
 
@@ -67,9 +51,10 @@ def test_get_viirs_dnb_monthly_fn_error_404():
         status=404,
         content_type="application/html",
     )
+    vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
 
     with pytest.raises(mechanicalsoup.LinkNotFoundError) as excinfo:
-        get_viirs_dnb_monthly_fn(
+        vdl.get_viirs_dnb_monthly_fn(
             "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
         )
 
@@ -85,168 +70,190 @@ def test_get_viirs_dnb_monthly_fn_error_nolink():
         status=200,
         content_type="application/html",
     )
+    vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
 
     with pytest.raises(Exception) as excinfo:
-        get_viirs_dnb_monthly_fn(
+        vdl.get_viirs_dnb_monthly_fn(
             "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
         )
 
     assert "No link found" in str(excinfo.value)
 
 
-def viirs_response_local_dir(test_type: str, login_catch_url: re.Pattern) -> Callable:
-    def wrap(f: Callable) -> Callable[[object], None]:
-        @gen_cache_dir(_tempdir)
-        @mock.patch("sys.platform", "linux")
-        @mock.patch("os.name", "posix")
-        @pytest.mark.dependency(
-            name="test_get_viirs_dnb_monthly_file",
-            depends=["test_get_viirs_dnb_monthly_fn"],
+def _get_viirs_decorator(fun: Callable) -> Callable[[object], None]:
+    @gen_cache_dir(_tempdir)
+    @mock.patch("sys.platform", "linux")
+    @mock.patch("os.name", "posix")
+    @pytest.mark.dependency(
+        name="test_get_viirs_dnb_monthly_file",
+        depends=["test_get_viirs_dnb_monthly_fn"],
+    )
+    @responses.activate
+    def magic(self):
+        responses.add(
+            mines_dir_listing["monthly_vcmslcfg"].method,
+            url=mines_dir_listing["monthly_vcmslcfg"].url,
+            body=mines_dir_listing["monthly_vcmslcfg"].html_content,
+            status=200,
+            content_type="application/html",
         )
-        @responses.activate
-        def wrapped_f(*args):
-            responses.add(
-                mines_dir_listing[test_type].method,
-                url=mines_dir_listing[test_type].url,
-                body=mines_dir_listing[test_type].html_content,
-                status=200,
-                content_type="application/html",
+
+        responses.add(
+            mines_login_form["monthly_vcmslcfg"].method,
+            url=re.compile(
+                "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
+            ),
+            body=mines_login_form["monthly_vcmslcfg"].html_content,
+            status=200,
+            content_type="application/html",
+        )
+        responses.add(
+            mines_login_form_post["monthly_vcmslcfg"].method,
+            url=mines_login_form_post["monthly_vcmslcfg"].url,
+            body="",
+            status=200,
+            content_type="application/tar+gz",
+        )
+        fun(self)
+
+    return magic
+
+
+class TestViirsDnbMonthlyFile:
+    _loc: str = "00N060E"
+    _year: int = 1900
+    _month: int = 9
+    _light_correction: ViirsDnbMonthlyType = ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
+
+    @_get_viirs_decorator
+    @pytest.mark.dependency(
+        name="test_get_viirs_dnb_monthly_file",
+        depends=["test_get_viirs_dnb_monthly_fn"],
+    )
+    @mock.patch.dict(
+        os.environ,
+        {
+            "PYALANYSIS_MINES_USERNAME": "usertest",
+            "PYALANYSIS_MINES_PASSWORD": "userpass",
+        },
+    )
+    def test_get_viirs_dnb_monthly_file(self):
+        fn = "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
+        vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
+        assert vdl.get_viirs_dnb_monthly_file(
+            "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
+        ) == (str(ensure_cache_dir()) + "/" + fn, fn)
+
+    @_get_viirs_decorator
+    @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
+    @mock.patch("mechanicalsoup.stateful_browser.StatefulBrowser", mock.Mock())
+    @pytest.mark.dependency(
+        name="test_get_viirs_dnb_monthly_file",
+        depends=["test_get_viirs_dnb_monthly_fn"],
+    )
+    @mock.patch.dict(
+        os.environ,
+        {
+            "PYALANYSIS_MINES_USERNAME": "usertest",
+            "PYALANYSIS_MINES_PASSWORD": "userpass",
+        },
+    )
+    @responses.activate
+    def test_get_viirs_dnb_monthly_file_file_exists(self):
+        mock_statefulbrowser = cast(
+            Mock, mechanicalsoup.stateful_browser.StatefulBrowser
+        )
+
+        dir = ensure_cache_dir()
+        vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
+        url, file = vdl.get_viirs_dnb_monthly_fn(
+            self._loc, self._year, self._month, self._light_correction
+        )
+
+        with open(f"{dir}/{file}", "wb") as outf:
+            outf.write(b"just a test")
+
+        assert vdl.get_viirs_dnb_monthly_file(
+            self._loc, self._year, self._month, self._light_correction
+        ) == (str(ensure_cache_dir()) + "/" + file, file)
+        assert not mock_statefulbrowser.called
+
+    @mock.patch.dict(
+        os.environ,
+        {},
+    )
+    @_get_viirs_decorator
+    def test_no_username(self):
+        with pytest.raises(Exception) as excinfo:
+            vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
+            vdl.get_viirs_dnb_monthly_file(
+                self._loc, self._year, self._month, self._light_correction
             )
 
-            responses.add(
-                mines_login_form[test_type].method,
-                url=login_catch_url,
-                body=mines_login_form[test_type].html_content,
-                status=200,
-                content_type="application/html",
+        assert "PYALANYSIS_MINES_USERNAME" in str(excinfo.value)
+
+    @mock.patch.dict(
+        os.environ,
+        {"PYALANYSIS_MINES_USERNAME": "someval"},
+    )
+    @_get_viirs_decorator
+    def test_no_password(self):
+        with pytest.raises(Exception) as excinfo:
+            vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
+            vdl.get_viirs_dnb_monthly_file(
+                self._loc, self._year, self._month, self._light_correction
             )
-            responses.add(
-                mines_login_form_post[test_type].method,
-                url=mines_login_form_post[test_type].url,
-                body="",
-                status=200,
-                content_type="application/tar+gz",
-            )
-            f(*args)
 
-        return wrapped_f
+        assert "PYALANYSIS_MINES_PASSWORD" in str(excinfo.value)
 
-    return wrap
+    def teardown(self) -> None:
+        if os.name == "posix":
+            if os.path.exists(_tempdir):
+                shutil.rmtree(_tempdir)
 
 
-_loc: str = "00N060E"
-_year: int = 1900
-_month: int = 9
-_light_correction: ViirsDnbMonthlyType = ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
+class TestOpen:
+    @gen_cache_dir(_tempdir)
+    @mock.patch("sys.platform", "linux")
+    @mock.patch("os.name", "posix")
+    def test_open_viirs_dnb_monthly_vcmslcfg_load(self) -> None:
+        tar_ball_name = (
+            "SVDNB_npp_19001001-19001031_00N060E_vcmslcfg_v10_c190010112300.tgz"
+        )
+        shutil.copy(
+            os.path.join(
+                ".", "tests", "test_viirs_monthly_vcmslcfg_load", tar_ball_name
+            ),
+            _tempdir,
+        )
+        vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
+        res = vdl.open_viirs_monthly_file(
+            (os.path.join(_tempdir, tar_ball_name), tar_ball_name)
+        )
 
+        assert res.dims == {"band": 1, "x": 481, "y": 481, "time": 1}
 
-@viirs_response_local_dir(
-    "monthly_vcmslcfg",
-    re.compile(
-        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
-    ),
-)
-@viirs_response_local_dir(
-    "monthly_vcmcfg",
-    re.compile(
-        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmcfg/.*"
-    ),
-)
-@mock.patch.dict(
-    os.environ,
-    {
-        "PYALANYSIS_MINES_USERNAME": "usertest",
-        "PYALANYSIS_MINES_PASSWORD": "userpass",
-    },
-)
-def test_get_viirs_dnb_monthly_file():
-    fn_sl = "SVDNB_npp_19000901-19000930_00N060E_vcmslcfg_v10_c190010112300.tgz"
-    fn = "SVDNB_npp_19000901-19000930_00N060E_vcmcfg_v10_c190010112300.tgz"
-    assert get_viirs_dnb_monthly_file(
-        "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
-    ) == (str(ensure_cache_dir()) + "/" + fn_sl, fn_sl)
-    assert get_viirs_dnb_monthly_file(
-        "00N060E", 1900, 9, ViirsDnbMonthlyType.NO_STRAY_LIGHT
-    ) == (str(ensure_cache_dir()) + "/" + fn, fn)
+    @gen_cache_dir(_tempdir)
+    @mock.patch("sys.platform", "linux")
+    @mock.patch("os.name", "posix")
+    def test_open_viirs_dnb_monthly_vcmslcfg_load_CRS(self) -> None:
+        tar_ball_name = (
+            "SVDNB_npp_19001001-19001031_00N060E_vcmslcfg_v10_c190010112300.tgz"
+        )
+        shutil.copy(
+            os.path.join(
+                ".", "tests", "test_viirs_monthly_vcmslcfg_load", tar_ball_name
+            ),
+            _tempdir,
+        )
+        vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
+        res = vdl.open_viirs_monthly_file(
+            (os.path.join(_tempdir, tar_ball_name), tar_ball_name)
+        )
 
+        assert res.rio.crs == rasterio.crs.CRS({"init": "EPSG:4326"})
 
-@viirs_response_local_dir(
-    "monthly_vcmslcfg",
-    re.compile(
-        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
-    ),
-)
-@mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
-@mock.patch("mechanicalsoup.stateful_browser.StatefulBrowser", mock.Mock())
-@mock.patch.dict(
-    os.environ,
-    {
-        "PYALANYSIS_MINES_USERNAME": "usertest",
-        "PYALANYSIS_MINES_PASSWORD": "userpass",
-    },
-)
-@responses.activate
-def test_get_viirs_dnb_monthly_file_file_exists():
-    mock_statefulbrowser = cast(Mock, mechanicalsoup.stateful_browser.StatefulBrowser)
-
-    dir = ensure_cache_dir()
-    url, file = get_viirs_dnb_monthly_fn(_loc, _year, _month, _light_correction)
-
-    with open(f"{dir}/{file}", "wb") as outf:
-        outf.write(b"just a test")
-
-    assert get_viirs_dnb_monthly_file(_loc, _year, _month, _light_correction) == (
-        str(ensure_cache_dir()) + "/" + file,
-        file,
-    )
-    assert not mock_statefulbrowser.called
-
-
-@mock.patch.dict(
-    os.environ,
-    {},
-)
-@viirs_response_local_dir(
-    "monthly_vcmslcfg",
-    re.compile(
-        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
-    ),
-)
-def test_no_username():
-    with pytest.raises(Exception) as excinfo:
-        get_viirs_dnb_monthly_file(_loc, _year, _month, _light_correction)
-
-    assert "PYALANYSIS_MINES_USERNAME" in str(excinfo.value)
-
-
-@mock.patch.dict(
-    os.environ,
-    {"PYALANYSIS_MINES_USERNAME": "someval"},
-)
-@viirs_response_local_dir(
-    "monthly_vcmslcfg",
-    re.compile(
-        "https://eogdata.mines.edu/nighttime_light/monthly/v10/1900/190009/vcmslcfg/.*"
-    ),
-)
-def test_no_password():
-    with pytest.raises(Exception) as excinfo:
-        get_viirs_dnb_monthly_file(_loc, _year, _month, _light_correction)
-
-    assert "PYALANYSIS_MINES_PASSWORD" in str(excinfo.value)
-
-
-@gen_cache_dir(_tempdir)
-@mock.patch("sys.platform", "linux")
-@mock.patch("os.name", "posix")
-def test_open_viirs_dnb_monthly_vcmslcfg_load() -> None:
-    tar_ball_name = "SVDNB_npp_19001001-19001031_00N060E_vcmslcfg_v10_c190010112300.tgz"
-    shutil.copy(
-        os.path.join(".", "tests", "test_viirs_monthly_vcmslcfg_load", tar_ball_name),
-        _tempdir,
-    )
-    res = open_viirs_monthly_file(
-        (os.path.join(_tempdir, tar_ball_name), tar_ball_name)
-    )
-
-    assert res.dims == {"band": 1, "x": 481, "y": 481, "time": 1}
+    def teardown(self) -> None:
+        if os.name == "posix":
+            if os.path.exists(_tempdir):
+                shutil.rmtree(_tempdir)
