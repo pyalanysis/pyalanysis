@@ -26,7 +26,7 @@ The process is similar to micromamba,
 (default) $ conda env create -f environment.yml
 (default) $ conda activate pyalanysis_demo_env
 (pyalanysis_demo_env) $ python -m ipykernel install --user --name pyalanysis_demo_env --display-name "Pyalanysis_demo_env"
-(pyalanysis_demo_env) $ micromamba deactivate
+(pyalanysis_demo_env) $ conda deactivate
 (default) $ PYALANYSIS_MINES_USERNAME = "your-username" ; \
   PYALANYSIS_MINES_PASSWORD = "your-password" ; \
   jupyter notebook
