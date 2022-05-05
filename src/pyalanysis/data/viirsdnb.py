@@ -218,7 +218,7 @@ class ViirsDnbMonthlyDataLoader:
 
             new_ds = xr.merge([avg_rad9h, cvg, cf_cvg])
         else:
-            new_ds = avg_rad9h
+            new_ds = avg_rad9h.to_dataset()
 
         year = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][0:4])
         month = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][4:6])
