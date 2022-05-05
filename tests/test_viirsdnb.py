@@ -9,6 +9,7 @@ import mechanicalsoup
 import pytest
 import rasterio.crs
 import responses  # type: ignore
+import xarray
 
 from pyalanysis.data import (
     ViirsDnbMonthlyDataLoader,
@@ -231,7 +232,29 @@ class TestOpen:
             (os.path.join(_tempdir, tar_ball_name), tar_ball_name)
         )
 
+        assert type(res) == xarray.Dataset
         assert res.dims == {"band": 1, "x": 481, "y": 481, "time": 1}
+
+        assert "avg_rad9h" in res.keys()
+        assert "cvg" in res.keys()
+        assert "cf_cvg" in res.keys()
+
+        res_limited = vdl.open_viirs_monthly_file(
+            (os.path.join(_tempdir, tar_ball_name), tar_ball_name), only_avg_rad9h=True
+        )
+
+        assert type(res_limited) == xarray.Dataset
+        assert res_limited.dims == {"band": 1, "x": 481, "y": 481, "time": 1}
+
+        assert "avg_rad9h" in res_limited.keys()
+        assert not ("cvg" in res_limited.keys())
+        assert not ("cf_cvg" in res_limited.keys())
+
+        res_dask = vdl.open_viirs_monthly_file(
+            (os.path.join(_tempdir, tar_ball_name), tar_ball_name),
+            chunks="auto",
+        )
+        assert type(res_dask.chunk()) == xarray.Dataset
 
     @gen_cache_dir(_tempdir)
     @mock.patch("sys.platform", "linux")
