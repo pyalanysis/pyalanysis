@@ -170,7 +170,9 @@ class ViirsDnbMonthlyDataLoader:
 
             return output_fp, fn
 
-    def open_viirs_monthly_file(self, filespec: Tuple[str, str]):
+    def open_viirs_monthly_file(
+        self, filespec: Tuple[str, str], only_avg_rad9h=False, **kwargs
+    ):
         log.info("Called " + inspect.stack()[0][3])
         base_fn = filespec[1].split(".")[0]
         dst_dir_name = os.path.join(ensure_cache_dir(), base_fn)
@@ -199,17 +201,24 @@ class ViirsDnbMonthlyDataLoader:
         fn_tokens = base_fn.split("_")
 
         avg_rad9h = rioxarray.open_rasterio(
-            base_path + FILE_EXTENSION_AVG_RAD, mask_and_scale=False
+            base_path + FILE_EXTENSION_AVG_RAD, mask_and_scale=False, **kwargs
         )
         avg_rad9h.name = "avg_rad9h"
-        cvg = rioxarray.open_rasterio(
-            base_path + FILE_EXTENSION_NUM_OBS, mask_and_scale=False
-        )
-        cvg.name = "cvg"
-        cf_cvg = rioxarray.open_rasterio(
-            base_path + FILE_EXTENSION_NUM_CLOUD_FREE_OBS, mask_and_scale=False
-        )
-        cf_cvg.name = "cf_cvg"
+        if not only_avg_rad9h:
+            cvg = rioxarray.open_rasterio(
+                base_path + FILE_EXTENSION_NUM_OBS, mask_and_scale=False, **kwargs
+            )
+            cvg.name = "cvg"
+            cf_cvg = rioxarray.open_rasterio(
+                base_path + FILE_EXTENSION_NUM_CLOUD_FREE_OBS,
+                mask_and_scale=False,
+                **kwargs,
+            )
+            cf_cvg.name = "cf_cvg"
+
+            new_ds = xr.merge([avg_rad9h, cvg, cf_cvg])
+        else:
+            new_ds = avg_rad9h
 
         year = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][0:4])
         month = int(fn_tokens[MINES_FN_DATE_RANGE_TOKEN_LOC][4:6])
@@ -218,5 +227,4 @@ class ViirsDnbMonthlyDataLoader:
 
         log.debug(f"Creating xarray for {year}, {month}, start {start}")
 
-        new_ds = xr.merge([avg_rad9h, cvg, cf_cvg])
         return new_ds.expand_dims("time").assign_coords(time=("time", time_range))
