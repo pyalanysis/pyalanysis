@@ -5,7 +5,7 @@ description = ""
 authors = ["Anton Bossenbroek <anton.bossenbroek@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.9"
 MechanicalSoup = "^1.1.0"
 urllib3 = "^1.26.8"
 mock = "^4.0.3"
@@ -15,23 +15,27 @@ rioxarray = "^0.10.2"
 pandas = "^1.4.1"
 dask = "^2022.5.0"
 
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
+[tool.poetry.group.dev.dependencies]
+pandas-stubs = "^1.5.3.230203"
+pytest = "^7.2.1"
+pytest-cov = "^4.0.0"
+pytest-dependency = "^0.5.1"
+pytest-mock = "^3.10.0"
+typeguard = "^2.13.3"
+codecov = "^2.1.12"
 flake8 = "^4.0.1"
 mypy = "^0.940"
 coverage = "^6.3.2"
-pytest-cov = "^3.0.0"
 black = "^22.1.0"
 flake8-bandit = "^3.0.0"
 flake8-black = "^0.3.2"
 flake8-bugbear = "^22.1.11"
 flake8-import-order = "^0.18.1"
-pytest-mock = "^3.7.0"
-codecov = "^2.1.12"
 requests-mock = "^1.9.3"
 responses = "^0.19.0"
 mock = "^4.0.3"
-pandas-stubs = "^1.2.0"
+types-requests = "^2.28.11.12"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
