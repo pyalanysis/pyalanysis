@@ -1,21 +1,65 @@
 ---
-name: Test
-on: [push, pull_request]  # yamllint disable-line rule:truthy
+name: test
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'pyalanysis/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'pyalanysis/**'
+
 jobs:
   tests:
     strategy:
-      fail-fast: false
       matrix:
-        python-version: [3.8, 3.9]
-        os: [ubuntu-18.04, macos-latest]
-    runs-on: ${{ matrix.os }}
+        version: ["3.8", "3.9"]
+      fail-fast: true
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - name: Install Python
+        uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: pip install nox==2022.1.7
-      - run: pip install poetry==1.1.13
-      - run: pip install nox-poetry==0.9.0
-      # - run: poetry install && poetry run pytest
-      - run: nox --sessions tests
+          python-version: ${{ matrix.version }}
+          cache: pip
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.3.2
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+          installer-parallel: true
+      - name: Load caches
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.venv
+          key: ${{ runner.os }}-${{ matrix.python-version}}-pyalanysis-poetry-${{ hashFiles('**/pyalanysis/poetry.lock') }}  # yamllint disable-line rule:line-length
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.python-version}}-pyalanysis-poetry-
+      - name: Install dependencies
+        run: |
+          pip install nox==2022.11.21
+          pip install nox-poetry==1.0.2
+      - name: Install package
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          cd pyalanysis
+          poetry install --no-interaction --no-root
+      - name: Run tests
+        run: |
+          cd pyalanysis
+          source .venv/bin/activate
+          nox --python ${{ matrix.version }} --sessions tests xdoctest
+      - name: Check typing with mypy
+        run: |
+          cd pyalanysis
+          source .venv/bin/activate
+          nox --python ${{ matrix.version }} --sessions mypy
