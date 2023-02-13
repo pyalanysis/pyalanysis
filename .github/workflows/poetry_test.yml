@@ -6,14 +6,10 @@ on:  # yamllint disable-line rule:truthy
     branches:
       - develop
       - main
-    paths:
-      - 'pyalanysis/**'
   pull_request:
     branches:
       - develop
       - main
-    paths:
-      - 'pyalanysis/**'
 
 jobs:
   tests:
@@ -51,15 +47,12 @@ jobs:
       - name: Install package
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: |
-          cd pyalanysis
           poetry install --no-interaction --no-root
       - name: Run tests
         run: |
-          cd pyalanysis
           source .venv/bin/activate
           nox --python ${{ matrix.version }} --sessions tests xdoctest
       - name: Check typing with mypy
         run: |
-          cd pyalanysis
           source .venv/bin/activate
           nox --python ${{ matrix.version }} --sessions mypy
