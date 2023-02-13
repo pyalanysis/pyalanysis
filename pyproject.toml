@@ -38,7 +38,7 @@ types-requests = "^2.28.11.12"
 
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.4.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.paths]
@@ -59,3 +59,50 @@ pretty = true
 show_column_numbers = true
 show_error_codes = true
 show_error_context = true
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    # "error",
+    "ignore::UserWarning",
+    # note the use of single quote below to denote "raw" strings in TOML
+    # 'ignore:function ham\(\) is deprecated:DeprecationWarning',
+]
+
+[tool.ruff]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    # "I",  # isort
+    "C4",   # flake8-comprehensions
+    "B",    # flake8-bugbear
+    "D",    # flake8-docstrings
+    "N",    # pep8-naming
+    "YTT",  # flake8-2020
+    "ANN",  # flake8-annotations
+    "G",    # flake8-logging-format
+    "PT",   # flake8-pytest-style
+    "RET",  # flake8-return
+    "SIM",  # flake8-simplify
+    "TCH",  # flake8-type-checking
+    "TRY",  # tryceratops
+    "UP",   # pyupgrade
+    "C90",  # mccabe
+    "PD",   # pandas-vet
+]
+
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "D203",  # 1 blank line required before class docstring
+    "D213",  # Multi-line docstring summary should start at the second line
+    "TCH002", # Move third-party import `pandas` into a type-checking block
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "D401",  # First line should be in imperative mood
+]
+
+# Assume Python 3.10.
+target-version = "py310"
+
+[tool.ruff.pydocstyle]
+convention = "google"  # Or "numpy", or "pep257"
