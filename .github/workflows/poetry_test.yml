@@ -6,16 +6,42 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9]
-        os: [ubuntu-18.04, macos-latest]
-    runs-on: ${{ matrix.os }}
+        version: ["3.8", "3.9", "3.10", "3.11"]
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: pip install nox==2022.1.7
-      - run: pip install poetry==1.1.13
-      - run: pip install nox-poetry==0.9.0
-      # - run: poetry install && poetry run pytest
-      - run: nox --sessions tests
+          python-version: ${{ matrix.version }}
+          cache: pip
+      - name: Install and configure Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.3.4
+          virtualenvs-create: true
+          virtualenvs-in-project: false
+          installer-parallel: true
+      - name: Load caches
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.venv
+          key: ${{ runner.os }}-${{ matrix.python-version}}-pyalanysis-poetry-${{ hashFiles('**/pyalanysis/poetry.lock') }}  # yamllint disable-line rule:line-length
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.python-version}}-pyalanysis-poetry-
+      - name: Install dependencies
+        run: |
+          pip install nox==2023.4.22
+          pip install nox-poetry==1.0.3
+      - name: Install package
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: |
+          poetry install --no-interaction --no-root
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          nox --python ${{ matrix.version }} --sessions tests xdoctest
+      - name: Check typing with mypy
+        run: |
+          source .venv/bin/activate
+          nox --python ${{ matrix.version }} --sessions mypy

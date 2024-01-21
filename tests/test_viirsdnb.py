@@ -143,7 +143,10 @@ class TestViirsDnbMonthlyFile:
         vdl: ViirsDnbMonthlyDataLoader = ViirsDnbMonthlyDataLoader()
         assert vdl.get_viirs_dnb_monthly_file(
             "00N060E", 1900, 9, ViirsDnbMonthlyType.STRAY_LIGHT_CORRECTED
-        ) == (str(ensure_cache_dir()) + "/" + fn, fn)
+        ) == (
+            str(ensure_cache_dir()) + "/" + fn,
+            fn,
+        )
 
     @_get_viirs_decorator
     @mock.patch("os.path.expanduser", mock.Mock(return_value=_tempdir))
@@ -176,7 +179,10 @@ class TestViirsDnbMonthlyFile:
 
         assert vdl.get_viirs_dnb_monthly_file(
             self._loc, self._year, self._month, self._light_correction
-        ) == (str(ensure_cache_dir()) + "/" + file, file)
+        ) == (
+            str(ensure_cache_dir()) + "/" + file,
+            file,
+        )
         assert not mock_statefulbrowser.called
 
     @mock.patch.dict(
@@ -247,8 +253,8 @@ class TestOpen:
         assert res_limited.dims == {"band": 1, "x": 481, "y": 481, "time": 1}
 
         assert "avg_rad9h" in res_limited.keys()
-        assert not ("cvg" in res_limited.keys())
-        assert not ("cf_cvg" in res_limited.keys())
+        assert "cvg" not in res_limited.keys()
+        assert "cf_cvg" not in res_limited.keys()
 
         res_dask = vdl.open_viirs_monthly_file(
             (os.path.join(_tempdir, tar_ball_name), tar_ball_name),

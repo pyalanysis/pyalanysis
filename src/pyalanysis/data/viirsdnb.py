@@ -4,7 +4,7 @@ import logging
 import os
 from pathlib import Path
 import tarfile
-from typing import Callable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import bs4
 import mechanicalsoup as ms
@@ -56,16 +56,13 @@ class ViirsDnbMonthlyDataLoader:
         month: int,
         stray_light_treatment: ViirsDnbMonthlyType,
     ) -> Tuple[str, str]:
-        format_type: Callable[[ViirsDnbMonthlyType], str] = (
-            lambda type: "vcmcfg"
-            if type == ViirsDnbMonthlyType.NO_STRAY_LIGHT
+        format_type = (
+            "vcmcfg"
+            if stray_light_treatment == ViirsDnbMonthlyType.NO_STRAY_LIGHT
             else "vcmslcfg"
         )
 
-        url = (
-            MINES_SITE
-            + f"monthly/v10/{year}/{year}{month:02}/{format_type(stray_light_treatment)}"
-        )
+        url = MINES_SITE + f"monthly/v10/{year}/{year}{month:02}/{format_type}"
 
         try:
             self._browser.open(url)
