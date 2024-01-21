@@ -36,6 +36,7 @@ pandas-stubs = "^1.2.0"
 
 [tool.poetry.group.dev.dependencies]
 poetry-plugin-export = "^1.6.0"
+pandas-stubs = "^2.1.4.231227"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
