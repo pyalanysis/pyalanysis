@@ -19,5 +19,8 @@ dependencies:
   - h3pandas~=0.2
   - keplergl
   - rasterio~=1.2
+  - dask-geopandas~=0.1.0
+  - dask>=2022.1,<2023.1
+  - tqdm
   - pip:
       - git+https://github.com/pyalanysis/pyalanysis.git@develop
